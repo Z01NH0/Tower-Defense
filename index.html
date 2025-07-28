@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tower Defense</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #1a1a2e;
+            color: #fff;
+            overflow: hidden;
+        }
+        
+        #game-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        #header {
+            background-color: #16213e;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        #game-info {
+            display: flex;
+            gap: 20px;
+        }
+        
+        #game-board {
+            position: relative;
+            flex-grow: 1;
+            background-color: #0f3460;
+            overflow: hidden;
+        }
+        
+        #grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(#1a5a8a33 1px, transparent 1px),
+                linear-gradient(90deg, #1a5a8a33 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+        
+        #base {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background-color: #e94560;
+            border-radius: 50%;
+            border: 5px solid #fff;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            z-index: 10;
+        }
+        
+        .building {
+            position: absolute;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 1px #000;
+            cursor: pointer;
+            transition: transform 0.1s;
+            z-index: 5;
+        }
+        
+        .building:hover {
+            transform: scale(1.05);
+        }
+        
+        .miner {
+            background-color: #2b7a0b;
+            border: 2px solid #5bb318;
+        }
+        
+        .cannon {
+            background-color: #7d5a50;
+            border: 2px solid #b4846c;
+        }
+        
+        .wall {
+            background-color: #7d5a50;
+            border: 2px solid #b4846c;
+        }
+        
+        .laser {
+            background-color: #3a0ca3;
+            border: 2px solid #7209b7;
+        }
+        
+        .building-level {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+        }
+        
+        .health-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: #ff0000;
+        }
+        
+        .health-fill {
+            height: 100%;
+            background-color: #00ff00;
+        }
+        
+        .mineral {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #ffd700;
+            border-radius: 50%;
+            border: 2px solid #daa520;
+            z-index: 2;
+        }
+        
+        .enemy {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: #ff0000;
+            border-radius: 50%;
+            border: 2px solid #8b0000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+            z-index: 4;
+            transition: transform 0.1s;
+        }
+        
+        .enemy:hover {
+            transform: scale(1.1);
+        }
+        
+        .enemy-health {
+            position: absolute;
+            top: -10px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #333;
+        }
+        
+        .enemy-health-fill {
+            height: 100%;
+            background-color: #00ff00;
+        }
+        
+        .projectile {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #ffff00;
+            border-radius: 50%;
+            z-index: 3;
+        }
+        
+        .laser-beam {
+            position: absolute;
+            background-color: #00ffff;
+            z-index: 3;
+            opacity: 0.7;
+        }
+        
+        #build-menu {
+            background-color: #16213e;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .build-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            background-color: #0f3460;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100px;
+        }
+        
+        .build-option:hover {
+            transform: scale(1.05);
+            background-color: #1a5a8a;
+        }
+        
+        .build-option.selected {
+            background-color: #e94560;
+            box-shadow: 0 0 10px #e94560;
+        }
+        
+        .build-icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+        
+        .build-cost {
+            font-size: 12px;
+            color: #ffd700;
+        }
+        
+        #preparation-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+        }
+        
+        #preparation-timer {
+            font-size: 48px;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+        
+        #wave-info {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        #game-over {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 30;
+        }
+        
+        #game-over h1 {
+            font-size: 48px;
+            color: #e94560;
+            margin-bottom: 20px;
+        }
+        
+        #restart-btn {
+            padding: 15px 30px;
+            background-color: #e94560;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        #restart-btn:hover {
+            background-color: #ff6b81;
+        }
+        
+        .tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 100;
+            max-width: 200px;
+            display: none;
+        }
+        
+        .upgrade-btn {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 5px;
+            font-size: 10px;
+            cursor: pointer;
+            display: none;
+            z-index: 6;
+        }
+        
+        .building:hover .upgrade-btn {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="header">
+            <h1>Tower Defense</h1>
+            <div id="game-info">
+                <div>Wave: <span id="wave-display">1</span></div>
+                <div>Diamantes: <span id="money-display">100</span></div>
+                <div>Base HP: <span id="base-hp">1000</span>/1000</div>
+            </div>
+        </div>
+        
+        <div id="game-board">
+            <div id="grid"></div>
+            <div id="base">BASE</div>
+            
+            <div id="preparation-screen">
+                <div id="wave-info">Próxima Wave: <span id="next-wave">1</span></div>
+                <div id="preparation-timer">30</div>
+                <div>Tempo de preparação</div>
+            </div>
+            
+            <div id="game-over">
+                <h1>GAME OVER</h1>
+                <p>Sua base foi destruída na wave <span id="final-wave">1</span></p>
+                <button id="restart-btn">Reiniciar</button>
+            </div>
+        </div>
+        
+        <div id="build-menu">
+            <div class="build-option" data-type="miner" data-cost="25">
+                <div class="build-icon" style="background-color: #2b7a0b;"></div>
+                <div>Mineradora (1)</div>
+                <div class="build-cost">Custo: 25</div>
+            </div>
+            <div class="build-option" data-type="cannon" data-cost="110">
+                <div class="build-icon" style="background-color: #7d5a50;"></div>
+                <div>Canhão (2)</div>
+                <div class="build-cost">Custo: 110</div>
+            </div>
+            <div class="build-option" data-type="wall" data-cost="15">
+                <div class="build-icon" style="background-color: #7d5a50;"></div>
+                <div>Muro (3)</div>
+                <div class="build-cost">Custo: 15</div>
+            </div>
+            <div class="build-option" data-type="laser" data-cost="750">
+                <div class="build-icon" style="background-color: #3a0ca3;"></div>
+                <div>Torre Laser (4)</div>
+                <div class="build-cost">Custo: 750</div>
+            </div>
+        </div>
+        
+        <div class="tooltip" id="tooltip"></div>
+    </div>
+
+    <script>
+        // Game state
+        const gameState = {
+            wave: 0,
+            money: 100,
+            baseHP: 1000,
+            maxBaseHP: 1000,
+            gameOver: false,
+            preparationTime: 30,
+            isPreparationPhase: true,
+            selectedBuilding: null,
+            buildings: [],
+            enemies: [],
+            minerals: [],
+            projectiles: [],
+            laserBeams: [],
+            enemySpawnPoints: [
+                { x: 0, y: 0 },
+                { x: 0, y: 1 },
+                { x: 1, y: 0 },
+                { x: 1, y: 1 }
+            ],
+            buildingStats: {
+                miner: {
+                    name: "Mineradora",
+                    cost: 25,
+                    hp: 100,
+                    baseProduction: 10,
+                    productionMultiplier: 1.08,
+                    upgradeCost: 25,
+                    upgradeCostMultiplier: 1.3,
+                    color: "#2b7a0b",
+                    size: 40
+                },
+                cannon: {
+                    name: "Canhão",
+                    cost: 110,
+                    hp: 250,
+                    baseDamage: 15,
+                    damageMultiplier: 1.1,
+                    baseAttackSpeed: 1.5,
+                    attackSpeedMultiplier: 1.05,
+                    range: 200,
+                    upgradeCost: 110,
+                    upgradeCostMultiplier: 1.3,
+                    color: "#7d5a50",
+                    size: 40
+                },
+                wall: {
+                    name: "Muro",
+                    cost: 15,
+                    hp: 750,
+                    hpMultiplier: 1.2,
+                    upgradeCost: 15,
+                    upgradeCostMultiplier: 1.3,
+                    color: "#7d5a50",
+                    size: 40
+                },
+                laser: {
+                    name: "Torre Laser",
+                    cost: 750,
+                    hp: 300,
+                    baseDamage: 30,
+                    damageMultiplier: 1.2,
+                    baseAttackSpeed: 3,
+                    attackSpeedMultiplier: 1.05,
+                    range: 250,
+                    stunDuration: 0.5,
+                    chainTargets: 5,
+                    upgradeCost: 750,
+                    upgradeCostMultiplier: 1.3,
+                    color: "#3a0ca3",
+                    size: 40
+                }
+            },
+            enemyStats: {
+                baseHP: 55,
+                hpMultiplier: 1.5,
+                hpIncreaseWaveInterval: 5,
+                speed: 50,
+                damage: 10
+            }
+        };
+
+        // DOM elements
+        const elements = {
+            gameBoard: document.getElementById('game-board'),
+            base: document.getElementById('base'),
+            waveDisplay: document.getElementById('wave-display'),
+            moneyDisplay: document.getElementById('money-display'),
+            baseHpDisplay: document.getElementById('base-hp'),
+            preparationScreen: document.getElementById('preparation-screen'),
+            preparationTimer: document.getElementById('preparation-timer'),
+            nextWaveDisplay: document.getElementById('next-wave'),
+            gameOverScreen: document.getElementById('game-over'),
+            finalWaveDisplay: document.getElementById('final-wave'),
+            restartBtn: document.getElementById('restart-btn'),
+            buildOptions: document.querySelectorAll('.build-option'),
+            tooltip: document.getElementById('tooltip')
+        };
+
+        // Game initialization
+        function initGame() {
+            gameState.wave = 0;
+            gameState.money = 100;
+            gameState.baseHP = gameState.maxBaseHP;
+            gameState.gameOver = false;
+            gameState.isPreparationPhase = true;
+            gameState.buildings = [];
+            gameState.enemies = [];
+            gameState.minerals = [];
+            gameState.projectiles = [];
+            gameState.laserBeams = [];
+            
+            // Clear the game board
+            document.querySelectorAll('.building, .enemy, .mineral, .projectile, .laser-beam').forEach(el => el.remove());
+            
+            // Update displays
+            updateDisplays();
+            
+            // Start preparation phase
+            startPreparationPhase();
+            
+            // Spawn some initial minerals
+            spawnMinerals(10);
+            
+            // Hide game over screen
+            elements.gameOverScreen.style.display = 'none';
+        }
+
+        // Update all game displays
+        function updateDisplays() {
+            elements.waveDisplay.textContent = gameState.wave;
+            elements.moneyDisplay.textContent = gameState.money;
+            elements.baseHpDisplay.textContent = gameState.baseHP;
+            elements.nextWaveDisplay.textContent = gameState.wave + 1;
+        }
+
+        // Start preparation phase
+        function startPreparationPhase() {
+            gameState.isPreparationPhase = true;
+            elements.preparationScreen.style.display = 'flex';
+            
+            let timer = gameState.preparationTime;
+            elements.preparationTimer.textContent = timer;
+            
+            const countdown = setInterval(() => {
+                timer--;
+                elements.preparationTimer.textContent = timer;
+                
+                if (timer <= 0) {
+                    clearInterval(countdown);
+                    startWave();
+                }
+            }, 1000);
+        }
+
+        // Start a new wave
+        function startWave() {
+            gameState.isPreparationPhase = false;
+            elements.preparationScreen.style.display = 'none';
+            gameState.wave++;
+            updateDisplays();
+            
+            // Spawn enemies
+            const enemyCount = Math.floor(5 * Math.pow(1.1, gameState.wave));
+            spawnEnemies(enemyCount);
+        }
+
+        // Spawn enemies
+        function spawnEnemies(count) {
+            const boardWidth = elements.gameBoard.clientWidth;
+            const boardHeight = elements.gameBoard.clientHeight;
+            
+            // Calculate enemy HP based on wave
+            let enemyHP = gameState.enemyStats.baseHP;
+            if (gameState.wave >= gameState.enemyStats.hpIncreaseWaveInterval) {
+                const multiplierCount = Math.floor(gameState.wave / gameState.enemyStats.hpIncreaseWaveInterval);
+                enemyHP *= Math.pow(gameState.enemyStats.hpMultiplier, multiplierCount);
+            }
+            
+            for (let i = 0; i < count; i++) {
+                const spawnPoint = gameState.enemySpawnPoints[
+                    Math.floor(Math.random() * gameState.enemySpawnPoints.length)
+                ];
+                
+                let x, y;
+                if (spawnPoint.x === 0) {
+                    x = Math.random() * 100;
+                } else {
+                    x = boardWidth - Math.random() * 100;
+                }
+                
+                if (spawnPoint.y === 0) {
+                    y = Math.random() * 100;
+                } else {
+                    y = boardHeight - Math.random() * 100;
+                }
+                
+                const enemy = document.createElement('div');
+                enemy.className = 'enemy';
+                enemy.style.left = `${x}px`;
+                enemy.style.top = `${y}px`;
+                
+                const healthBar = document.createElement('div');
+                healthBar.className = 'enemy-health';
+                
+                const healthFill = document.createElement('div');
+                healthFill.className = 'enemy-health-fill';
+                healthFill.style.width = '100%';
+                
+                healthBar.appendChild(healthFill);
+                enemy.appendChild(healthBar);
+                elements.gameBoard.appendChild(enemy);
+                
+                gameState.enemies.push({
+                    element: enemy,
+                    x,
+                    y,
+                    hp: enemyHP,
+                    maxHP: enemyHP,
+                    speed: gameState.enemyStats.speed,
+                    damage: gameState.enemyStats.damage,
+                    healthFill,
+                    isStunned: false,
+                    stunTimer: 0
+                });
+            }
+        }
+
+        // Spawn minerals
+        function spawnMinerals(count) {
+            const boardWidth = elements.gameBoard.clientWidth;
+            const boardHeight = elements.gameBoard.clientHeight;
+            
+            for (let i = 0; i < count; i++) {
+                const x = 50 + Math.random() * (boardWidth - 100);
+                const y = 50 + Math.random() * (boardHeight - 100);
+                
+                const mineral = document.createElement('div');
+                mineral.className = 'mineral';
+                mineral.style.left = `${x}px`;
+                mineral.style.top = `${y}px`;
+                elements.gameBoard.appendChild(mineral);
+                
+                gameState.minerals.push({
+                    element: mineral,
+                    x,
+                    y
+                });
+            }
+        }
+
+        // Place building
+        function placeBuilding(type, x, y) {
+            const stats = gameState.buildingStats[type];
+            
+            // Check if player has enough money
+            if (gameState.money < stats.cost) {
+                return false;
+            }
+            
+            // Check if position is valid (not on base and not overlapping other buildings)
+            const baseRect = elements.base.getBoundingClientRect();
+            const boardRect = elements.gameBoard.getBoundingClientRect();
+            
+            const baseX = baseRect.left - boardRect.left + baseRect.width / 2;
+            const baseY = baseRect.top - boardRect.top + baseRect.height / 2;
+            
+            const distanceToBase = Math.sqrt(Math.pow(x - baseX, 2) + Math.pow(y - baseY, 2));
+            if (distanceToBase < 60) {
+                return false;
+            }
+            
+            // Check for overlapping buildings
+            for (const building of gameState.buildings) {
+                const buildingX = parseInt(building.element.style.left);
+                const buildingY = parseInt(building.element.style.top);
+                const distance = Math.sqrt(Math.pow(x - buildingX, 2) + Math.pow(y - buildingY, 2));
+                
+                if (distance < 30) {
+                    return false;
+                }
+            }
+            
+            // Snap to grid
+            const gridSize = 40;
+            const snappedX = Math.round(x / gridSize) * gridSize;
+            const snappedY = Math.round(y / gridSize) * gridSize;
+            
+            // Create building
+            const building = document.createElement('div');
+            building.className = `building ${type}`;
+            building.style.left = `${snappedX}px`;
+            building.style.top = `${snappedY}px`;
+            building.style.width = `${stats.size}px`;
+            building.style.height = `${stats.size}px`;
+            building.style.backgroundColor = stats.color;
+            building.style.borderColor = stats.color;
+            
+            const levelDisplay = document.createElement('div');
+            levelDisplay.className = 'building-level';
+            levelDisplay.textContent = '1';
+            building.appendChild(levelDisplay);
+            
+            const healthBar = document.createElement('div');
+            healthBar.className = 'health-bar';
+            
+            const healthFill = document.createElement('div');
+            healthFill.className = 'health-fill';
+            healthFill.style.width = '100%';
+            
+            healthBar.appendChild(healthFill);
+            building.appendChild(healthBar);
+            
+            const upgradeBtn = document.createElement('button');
+            upgradeBtn.className = 'upgrade-btn';
+            upgradeBtn.textContent = 'Upgrade';
+            building.appendChild(upgradeBtn);
+            
+            elements.gameBoard.appendChild(building);
+            
+            // Add building to game state
+            const newBuilding = {
+                type,
+                element: building,
+                x: snappedX,
+                y: snappedY,
+                level: 1,
+                hp: stats.hp,
+                maxHP: stats.hp,
+                healthFill,
+                lastAttackTime: 0,
+                upgradeBtn,
+                // Type-specific properties
+                ...(type === 'miner' ? {
+                    lastProductionTime: 0,
+                    productionRate: stats.baseProduction,
+                    nearbyMinerals: []
+                } : {}),
+                ...(type === 'cannon' ? {
+                    damage: stats.baseDamage,
+                    attackSpeed: stats.baseAttackSpeed,
+                    range: stats.range
+                } : {}),
+                ...(type === 'wall' ? {} : {}),
+                ...(type === 'laser' ? {
+                    damage: stats.baseDamage,
+                    attackSpeed: stats.baseAttackSpeed,
+                    range: stats.range,
+                    stunDuration: stats.stunDuration,
+                    chainTargets: stats.chainTargets
+                } : {})
+            };
+            
+            gameState.buildings.push(newBuilding);
+            
+            // Deduct cost
+            gameState.money -= stats.cost;
+            updateDisplays();
+            
+            // Set up event listeners
+            building.addEventListener('mouseenter', () => showTooltip(newBuilding));
+            building.addEventListener('mouseleave', hideTooltip);
+            
+            upgradeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                upgradeBuilding(newBuilding);
+            });
+            
+            return true;
+        }
+
+        // Upgrade building
+        function upgradeBuilding(building) {
+            const stats = gameState.buildingStats[building.type];
+            const upgradeCost = Math.floor(stats.upgradeCost * Math.pow(stats.upgradeCostMultiplier, building.level - 1));
+            
+            if (gameState.money >= upgradeCost) {
+                gameState.money -= upgradeCost;
+                building.level++;
+                building.element.querySelector('.building-level').textContent = building.level;
+                
+                // Update building properties based on type
+                switch (building.type) {
+                    case 'miner':
+                        building.productionRate *= stats.productionMultiplier;
+                        break;
+                    case 'cannon':
+                        building.damage *= stats.damageMultiplier;
+                        building.attackSpeed /= stats.attackSpeedMultiplier;
+                        break;
+                    case 'wall':
+                        building.maxHP *= stats.hpMultiplier;
+                        building.hp = building.maxHP;
+                        building.healthFill.style.width = '100%';
+                        break;
+                    case 'laser':
+                        building.damage *= stats.damageMultiplier;
+                        building.attackSpeed /= stats.attackSpeedMultiplier;
+                        break;
+                }
+                
+                // Increase HP for all buildings
+                building.maxHP *= 1.1;
+                building.hp = building.maxHP;
+                building.healthFill.style.width = '100%';
+                
+                updateDisplays();
+                showTooltip(building);
+            }
+        }
+
+        // Show tooltip for building
+        function showTooltip(building) {
+            const stats = gameState.buildingStats[building.type];
+            const upgradeCost = Math.floor(stats.upgradeCost * Math.pow(stats.upgradeCostMultiplier, building.level - 1));
+            
+            let tooltipText = `<strong>${stats.name} (Nível ${building.level})</strong><br>`;
+            tooltipText += `HP: ${Math.floor(building.hp)}/${Math.floor(building.maxHP)}<br>`;
+            tooltipText += `Custo de upgrade: ${upgradeCost}<br>`;
+            
+            switch (building.type) {
+                case 'miner':
+                    tooltipText += `Produção: ${building.productionRate.toFixed(1)}/s<br>`;
+                    break;
+                case 'cannon':
+                    tooltipText += `Dano: ${building.damage.toFixed(1)}<br>`;
+                    tooltipText += `Velocidade: ${(1 / building.attackSpeed).toFixed(1)}/s<br>`;
+                    tooltipText += `Alcance: ${building.range}px<br>`;
+                    break;
+                case 'wall':
+                    // No special stats for walls
+                    break;
+                case 'laser':
+                    tooltipText += `Dano: ${building.damage.toFixed(1)}<br>`;
+                    tooltipText += `Velocidade: ${(1 / building.attackSpeed).toFixed(1)}/s<br>`;
+                    tooltipText += `Alcance: ${building.range}px<br>`;
+                    tooltipText += `Atordoa: ${building.stunDuration}s<br>`;
+                    tooltipText += `Alvos: ${building.chainTargets}<br>`;
+                    break;
+            }
+            
+            elements.tooltip.innerHTML = tooltipText;
+            elements.tooltip.style.display = 'block';
+            
+            // Position tooltip near mouse
+            const rect = building.element.getBoundingClientRect();
+            elements.tooltip.style.left = `${rect.right + 5}px`;
+            elements.tooltip.style.top = `${rect.top}px`;
+        }
+
+        // Hide tooltip
+        function hideTooltip() {
+            elements.tooltip.style.display = 'none';
+        }
+
+        // Game loop
+        function gameLoop(timestamp) {
+            if (gameState.gameOver) return;
+            
+            // Update buildings
+            updateBuildings(timestamp);
+            
+            // Update enemies
+            updateEnemies(timestamp);
+            
+            // Update projectiles
+            updateProjectiles();
+            
+            // Update laser beams
+            updateLaserBeams();
+            
+            // Check if wave is complete
+            if (!gameState.isPreparationPhase && gameState.enemies.length === 0) {
+                startPreparationPhase();
+            }
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Update buildings
+        function updateBuildings(timestamp) {
+            for (const building of gameState.buildings) {
+                // Check if building is destroyed
+                if (building.hp <= 0) {
+                    building.element.remove();
+                    gameState.buildings = gameState.buildings.filter(b => b !== building);
+                    continue;
+                }
+                
+                // Update health bar
+                const healthPercent = (building.hp / building.maxHP) * 100;
+                building.healthFill.style.width = `${healthPercent}%`;
+                
+                // Building type-specific updates
+                switch (building.type) {
+                    case 'miner':
+                        updateMiner(building, timestamp);
+                        break;
+                    case 'cannon':
+                        updateCannon(building, timestamp);
+                        break;
+                    case 'laser':
+                        updateLaser(building, timestamp);
+                        break;
+                }
+            }
+        }
+
+        // Update miner building
+        function updateMiner(building, timestamp) {
+            // Find nearby minerals
+            if (building.nearbyMinerals.length === 0) {
+                for (const mineral of gameState.minerals) {
+                    const distance = Math.sqrt(
+                        Math.pow(building.x + building.element.clientWidth / 2 - mineral.x, 2) +
+                        Math.pow(building.y + building.element.clientHeight / 2 - mineral.y, 2)
+                    );
+                    
+                    if (distance < 100) {
+                        building.nearbyMinerals.push(mineral);
+                    }
+                }
+            }
+            
+            // Produce money if near minerals
+            if (building.nearbyMinerals.length > 0 && timestamp - building.lastProductionTime > 1000) {
+                gameState.money += building.productionRate;
+                updateDisplays();
+                building.lastProductionTime = timestamp;
+                
+                // Visual feedback
+                building.element.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    building.element.style.transform = 'scale(1)';
+                }, 100);
+            }
+        }
+
+        // Update cannon building
+        function updateCannon(building, timestamp) {
+            if (timestamp - building.lastAttackTime > building.attackSpeed * 1000) {
+                // Find closest enemy in range
+                let closestEnemy = null;
+                let closestDistance = Infinity;
+                
+                for (const enemy of gameState.enemies) {
+                    if (enemy.isStunned) continue;
+                    
+                    const distance = Math.sqrt(
+                        Math.pow(building.x + building.element.clientWidth / 2 - enemy.x, 2) +
+                        Math.pow(building.y + building.element.clientHeight / 2 - enemy.y, 2)
+                    );
+                    
+                    if (distance < building.range && distance < closestDistance) {
+                        closestEnemy = enemy;
+                        closestDistance = distance;
+                    }
+                }
+                
+                // Attack if enemy found
+                if (closestEnemy) {
+                    building.lastAttackTime = timestamp;
+                    
+                    // Create projectile
+                    const projectile = document.createElement('div');
+                    projectile.className = 'projectile';
+                    projectile.style.left = `${building.x + building.element.clientWidth / 2 - 4}px`;
+                    projectile.style.top = `${building.y + building.element.clientHeight / 2 - 4}px`;
+                    elements.gameBoard.appendChild(projectile);
+                    
+                    gameState.projectiles.push({
+                        element: projectile,
+                        startX: building.x + building.element.clientWidth / 2,
+                        startY: building.y + building.element.clientHeight / 2,
+                        targetX: closestEnemy.x + closestEnemy.element.clientWidth / 2,
+                        targetY: closestEnemy.y + closestEnemy.element.clientHeight / 2,
+                        speed: 500, // pixels per second
+                        damage: building.damage,
+                        target: closestEnemy
+                    });
+                    
+                    // Visual feedback
+                    building.element.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        building.element.style.transform = 'scale(1)';
+                    }, 100);
+                }
+            }
+        }
+
+        // Update laser tower
+        function updateLaser(building, timestamp) {
+            if (timestamp - building.lastAttackTime > building.attackSpeed * 1000) {
+                // Find enemies in range
+                const enemiesInRange = [];
+                
+                for (const enemy of gameState.enemies) {
+                    const distance = Math.sqrt(
+                        Math.pow(building.x + building.element.clientWidth / 2 - enemy.x, 2) +
+                        Math.pow(building.y + building.element.clientHeight / 2 - enemy.y, 2)
+                    );
+                    
+                    if (distance < building.range) {
+                        enemiesInRange.push({ enemy, distance });
+                    }
+                }
+                
+                // Sort by distance
+                enemiesInRange.sort((a, b) => a.distance - b.distance);
+                
+                // Attack if enemies found (up to chain limit)
+                if (enemiesInRange.length > 0) {
+                    building.lastAttackTime = timestamp;
+                    
+                    const targets = enemiesInRange.slice(0, building.chainTargets);
+                    
+                    // Create laser beam
+                    const beam = document.createElement('div');
+                    beam.className = 'laser-beam';
+                    elements.gameBoard.appendChild(beam);
+                    
+                    gameState.laserBeams.push({
+                        element: beam,
+                        source: building,
+                        targets,
+                        damage: building.damage,
+                        stunDuration: building.stunDuration,
+                        startTime: timestamp,
+                        duration: 300 // milliseconds
+                    });
+                    
+                    // Apply damage and stun
+                    for (const target of targets) {
+                        target.enemy.hp -= building.damage;
+                        target.enemy.healthFill.style.width = `${(target.enemy.hp / target.enemy.maxHP) * 100}%`;
+                        
+                        // Stun enemy
+                        target.enemy.isStunned = true;
+                        target.enemy.stunTimer = timestamp + building.stunDuration * 1000;
+                        
+                        // Visual feedback
+                        target.enemy.element.style.backgroundColor = '#00ffff';
+                        setTimeout(() => {
+                            if (target.enemy.stunTimer <= timestamp) {
+                                target.enemy.element.style.backgroundColor = '#ff0000';
+                            }
+                        }, building.stunDuration * 1000);
+                    }
+                    
+                    // Visual feedback
+                    building.element.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        building.element.style.transform = 'scale(1)';
+                    }, 100);
+                }
+            }
+        }
+
+        // Update enemies
+        function updateEnemies(timestamp) {
+            const baseRect = elements.base.getBoundingClientRect();
+            const boardRect = elements.gameBoard.getBoundingClientRect();
+            
+            const baseX = baseRect.left - boardRect.left + baseRect.width / 2;
+            const baseY = baseRect.top - boardRect.top + baseRect.height / 2;
+            
+            for (let i = gameState.enemies.length - 1; i >= 0; i--) {
+                const enemy = gameState.enemies[i];
+                
+                // Check if enemy is dead
+                if (enemy.hp <= 0) {
+                    // Chance to drop mineral
+                    if (Math.random() < 0.2) {
+                        const mineral = document.createElement('div');
+                        mineral.className = 'mineral';
+                        mineral.style.left = `${enemy.x}px`;
+                        mineral.style.top = `${enemy.y}px`;
+                        elements.gameBoard.appendChild(mineral);
+                        
+                        gameState.minerals.push({
+                            element: mineral,
+                            x: enemy.x,
+                            y: enemy.y
+                        });
+                    }
+                    
+                    enemy.element.remove();
+                    gameState.enemies.splice(i, 1);
+                    continue;
+                }
+                
+                // Check if enemy is stunned
+                if (enemy.isStunned) {
+                    if (timestamp >= enemy.stunTimer) {
+                        enemy.isStunned = false;
+                        enemy.element.style.backgroundColor = '#ff0000';
+                    }
+                    continue;
+                }
+                
+                // Move toward base
+                const angle = Math.atan2(baseY - enemy.y, baseX - enemy.x);
+                const speed = enemy.speed / 60; // Assuming 60 FPS
+                
+                enemy.x += Math.cos(angle) * speed;
+                enemy.y += Math.sin(angle) * speed;
+                
+                enemy.element.style.left = `${enemy.x}px`;
+                enemy.element.style.top = `${enemy.y}px`;
+                
+                // Check collision with base
+                const distanceToBase = Math.sqrt(Math.pow(baseX - enemy.x, 2) + Math.pow(baseY - enemy.y, 2));
+                if (distanceToBase < 40) {
+                    // Damage base
+                    gameState.baseHP -= enemy.damage;
+                    elements.baseHpDisplay.textContent = gameState.baseHP;
+                    
+                    // Visual feedback
+                    elements.base.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        elements.base.style.transform = 'scale(1)';
+                    }, 100);
+                    
+                    // Remove enemy
+                    enemy.element.remove();
+                    gameState.enemies.splice(i, 1);
+                    
+                    // Check if base is destroyed
+                    if (gameState.baseHP <= 0) {
+                        gameOver();
+                    }
+                }
+                
+                // Check collision with walls
+                for (const building of gameState.buildings) {
+                    if (building.type === 'wall') {
+                        const buildingCenterX = building.x + building.element.clientWidth / 2;
+                        const buildingCenterY = building.y + building.element.clientHeight / 2;
+                        
+                        const distance = Math.sqrt(
+                            Math.pow(enemy.x - buildingCenterX, 2) +
+                            Math.pow(enemy.y - buildingCenterY, 2)
+                        );
+                        
+                        if (distance < 30) {
+                            // Damage wall
+                            building.hp -= enemy.damage;
+                            
+                            // Visual feedback
+                            building.element.style.transform = 'scale(1.1)';
+                            setTimeout(() => {
+                                building.element.style.transform = 'scale(1)';
+                            }, 100);
+                            
+                            // Move enemy back slightly
+                            const pushAngle = Math.atan2(enemy.y - buildingCenterY, enemy.x - buildingCenterX);
+                            enemy.x += Math.cos(pushAngle) * 5;
+                            enemy.y += Math.sin(pushAngle) * 5;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Update projectiles
+        function updateProjectiles() {
+            for (let i = gameState.projectiles.length - 1; i >= 0; i--) {
+                const projectile = gameState.projectiles[i];
+                
+                // Calculate direction
+                const dx = projectile.targetX - projectile.startX;
+                const dy = projectile.targetY - projectile.startY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const directionX = dx / distance;
+                const directionY = dy / distance;
+                
+                // Move projectile
+                const elapsed = 1/60; // Assuming 60 FPS
+                const moveDistance = projectile.speed * elapsed;
+                
+                projectile.startX += directionX * moveDistance;
+                projectile.startY += directionY * moveDistance;
+                
+                projectile.element.style.left = `${projectile.startX - 4}px`;
+                projectile.element.style.top = `${projectile.startY - 4}px`;
+                
+                // Check if reached target or passed it
+                const newDx = projectile.targetX - projectile.startX;
+                const newDy = projectile.targetY - projectile.startY;
+                const newDistance = Math.sqrt(newDx * newDx + newDy * newDy);
+                
+                if (newDistance > distance || distance < 5) {
+                    // Apply damage
+                    if (gameState.enemies.includes(projectile.target)) {
+                        projectile.target.hp -= projectile.damage;
+                        projectile.target.healthFill.style.width = `${(projectile.target.hp / projectile.target.maxHP) * 100}%`;
+                        
+                        // Visual feedback
+                        projectile.target.element.style.transform = 'scale(1.1)';
+                        setTimeout(() => {
+                            projectile.target.element.style.transform = 'scale(1)';
+                        }, 100);
+                    }
+                    
+                    // Remove projectile
+                    projectile.element.remove();
+                    gameState.projectiles.splice(i, 1);
+                }
+            }
+        }
+
+        // Update laser beams
+        function updateLaserBeams() {
+            for (let i = gameState.laserBeams.length - 1; i >= 0; i--) {
+                const beam = gameState.laserBeams[i];
+                
+                // Draw beam between source and targets
+                let path = '';
+                let lastX = beam.source.x + beam.source.element.clientWidth / 2;
+                let lastY = beam.source.y + beam.source.element.clientHeight / 2;
+                
+                for (const target of beam.targets) {
+                    const targetX = target.enemy.x + target.enemy.element.clientWidth / 2;
+                    const targetY = target.enemy.y + target.enemy.element.clientHeight / 2;
+                    
+                    path += `M ${lastX} ${lastY} L ${targetX} ${targetY} `;
+                    lastX = targetX;
+                    lastY = targetY;
+                }
+                
+                beam.element.setAttribute('d', path);
+                beam.element.style.strokeWidth = '3px';
+                
+                // Check if beam duration is over
+                if (performance.now() - beam.startTime > beam.duration) {
+                    beam.element.remove();
+                    gameState.laserBeams.splice(i, 1);
+                }
+            }
+        }
+
+        // Game over
+        function gameOver() {
+            gameState.gameOver = true;
+            elements.finalWaveDisplay.textContent = gameState.wave;
+            elements.gameOverScreen.style.display = 'flex';
+        }
+
+        // Event listeners
+        function setupEventListeners() {
+            // Building selection
+            elements.buildOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    elements.buildOptions.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    
+                    const type = option.dataset.type;
+                    gameState.selectedBuilding = type;
+                });
+            });
+            
+            // Keyboard shortcuts for building selection
+            document.addEventListener('keydown', (e) => {
+                if (e.key >= '1' && e.key <= '4') {
+                    const index = parseInt(e.key) - 1;
+                    if (index < elements.buildOptions.length) {
+                        elements.buildOptions.forEach(opt => opt.classList.remove('selected'));
+                        elements.buildOptions[index].classList.add('selected');
+                        gameState.selectedBuilding = elements.buildOptions[index].dataset.type;
+                    }
+                }
+            });
+            
+            // Place building on click
+            elements.gameBoard.addEventListener('click', (e) => {
+                if (!gameState.isPreparationPhase || !gameState.selectedBuilding) return;
+                
+                const rect = elements.gameBoard.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                placeBuilding(gameState.selectedBuilding, x, y);
+            });
+            
+            // Restart game
+            elements.restartBtn.addEventListener('click', initGame);
+        }
+
+        // Initialize game
+        setupEventListeners();
+        initGame();
+        requestAnimationFrame(gameLoop);
+    </script>
+</body>
+</html>
