@@ -3,69 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tower Defense Avançado</title>
+    <title>Tower Defense </title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        
+        :root {
+            --primary-color: #00ffaa;
+            --secondary-color: #0099ff;
+            --dark-color: #0a192f;
+            --light-color: #ccd6f6;
+            --danger-color: #ff5555;
+            --warning-color: #ffcc00;
+            --success-color: #00cc66;
+        }
+        
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Arial', sans-serif;
-            background-color: #1a1a2e;
-            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            background-color: var(--dark-color);
+            color: var(--light-color);
             overflow: hidden;
+            user-select: none;
         }
         
         #game-container {
             display: flex;
             flex-direction: column;
             height: 100vh;
-            width: 100vw;
         }
         
         #header {
-            background-color: #16213e;
-            padding: 10px;
+            background-color: rgba(10, 25, 47, 0.9);
+            padding: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-            flex-shrink: 0;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.7);
+            position: relative;
+            z-index: 20;
+            border-bottom: 1px solid var(--primary-color);
+        }
+        
+        #game-title {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(0, 255, 170, 0.3);
         }
         
         #game-info {
             display: flex;
-            gap: 20px;
+            gap: 25px;
+            font-size: 16px;
+        }
+        
+        .info-box {
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: 1px solid rgba(0, 255, 170, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .info-box span {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        #wave-timer {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--danger-color), #ff0000);
+            padding: 8px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 0 15px rgba(255, 85, 85, 0.5);
+            display: none;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.05); }
+            100% { transform: translateX(-50%) scale(1); }
         }
         
         #game-board {
             position: relative;
             flex-grow: 1;
-            background-color: #0f3460;
+            background-color: #0a1426;
             overflow: hidden;
-            width: 1000px;
-            height: 1000px;
-            margin: 0 auto;
-        }
-        
-        #grid {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
             background-image: 
-                linear-gradient(#1a5a8a33 1px, transparent 1px),
-                linear-gradient(90deg, #1a5a8a33 1px, transparent 1px);
+                radial-gradient(circle at 1px 1px, rgba(0, 255, 170, 0.1) 1px, transparent 0);
             background-size: 40px 40px;
-            pointer-events: none;
         }
         
         #base {
             position: absolute;
-            width: 80px;
-            height: 80px;
-            background-color: #e94560;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, var(--primary-color), #00cc99);
             border-radius: 50%;
-            border: 5px solid #fff;
+            border: 5px solid var(--light-color);
+            box-shadow: 0 0 20px var(--primary-color);
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -73,25 +121,20 @@
             justify-content: center;
             align-items: center;
             font-weight: bold;
+            font-size: 18px;
+            color: var(--dark-color);
             z-index: 10;
-            box-shadow: 0 0 20px #e94560;
+            transition: all 0.3s;
         }
         
-        .base-level {
-            position: absolute;
-            bottom: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 2px 10px;
-            border-radius: 10px;
-            font-size: 12px;
+        #base:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+            box-shadow: 0 0 30px var(--primary-color);
         }
         
         .building {
             position: absolute;
-            border-radius: 5px;
+            border-radius: 8px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -99,53 +142,56 @@
             font-size: 12px;
             font-weight: bold;
             color: white;
-            text-shadow: 1px 1px 1px #000;
+            text-shadow: 1px 1px 2px #000;
             cursor: pointer;
-            transition: transform 0.1s;
+            transition: all 0.2s;
             z-index: 5;
-            box-sizing: border-box;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
         
         .building:hover {
-            transform: scale(1.05);
+            transform: scale(1.1);
             z-index: 15;
         }
         
         .miner {
-            background-color: #2b7a0b;
-            border: 2px solid #5bb318;
-            clip-path: polygon(50% 0%, 80% 20%, 80% 80%, 50% 100%, 20% 80%, 20% 20%);
+            background: linear-gradient(135deg, #2b7a0b, #5bb318);
+            border: 2px solid #a8ff78;
+            box-shadow: 0 0 15px rgba(43, 122, 11, 0.6);
         }
         
         .cannon {
-            background-color: #7d5a50;
-            border: 2px solid #b4846c;
-            clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+            background: linear-gradient(135deg, #7d5a50, #b4846c);
+            border: 2px solid #ffb48f;
+            box-shadow: 0 0 15px rgba(125, 90, 80, 0.6);
         }
         
         .wall {
-            background-color: #7d5a50;
-            border: 2px solid #b4846c;
+            background: linear-gradient(135deg, #555555, #888888);
+            border: 2px solid #cccccc;
+            box-shadow: 0 0 15px rgba(85, 85, 85, 0.6);
         }
         
         .laser {
-            background-color: #3a0ca3;
-            border: 2px solid #7209b7;
-            clip-path: circle(50% at 50% 50%);
+            background: linear-gradient(135deg, #3a0ca3, #7209b7);
+            border: 2px solid #f72585;
+            box-shadow: 0 0 20px rgba(58, 12, 163, 0.7);
         }
         
         .building-level {
             position: absolute;
             top: 2px;
             right: 2px;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.7);
             border-radius: 50%;
-            width: 16px;
-            height: 16px;
+            width: 20px;
+            height: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 10px;
+            font-size: 11px;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
         }
         
         .health-bar {
@@ -153,164 +199,177 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 5px;
-            background-color: #ff0000;
+            height: 6px;
+            background-color: rgba(255, 0, 0, 0.3);
+            border-radius: 0 0 5px 5px;
         }
         
         .health-fill {
             height: 100%;
-            background-color: #00ff00;
+            background: linear-gradient(90deg, #00ff00, #00cc66);
+            border-radius: 0 0 5px 5px;
+            transition: width 0.3s;
         }
         
         .mineral {
             position: absolute;
-            width: 20px;
-            height: 20px;
-            background-color: #ffd700;
+            width: 24px;
+            height: 24px;
+            background: radial-gradient(circle at 30% 30%, #ffd700, #daa520);
             border-radius: 50%;
-            border: 2px solid #daa520;
+            border: 2px solid #ffcc00;
             z-index: 2;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
         }
         
         .enemy {
             position: absolute;
-            width: 30px;
-            height: 30px;
-            background-color: #ff0000;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            border: 2px solid #8b0000;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 10px;
+            font-size: 12px;
             font-weight: bold;
             color: white;
             z-index: 4;
-            transition: transform 0.1s;
+            transition: all 0.2s;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            animation: pulseEnemy 2s infinite;
         }
         
-        .enemy:hover {
-            transform: scale(1.1);
-            z-index: 16;
+        @keyframes pulseEnemy {
+            0% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
+            50% { box-shadow: 0 0 15px rgba(255, 0, 0, 0.8); }
+            100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
+        }
+        
+        .enemy-type1 {
+            background: radial-gradient(circle at 30% 30%, #ff5555, #cc0000);
+            border: 2px solid #ff0000;
+        }
+        
+        .enemy-type2 {
+            background: radial-gradient(circle at 30% 30%, #ff9966, #cc6600);
+            border: 2px solid #ff6600;
+        }
+        
+        .enemy-type3 {
+            background: radial-gradient(circle at 30% 30%, #aa55ff, #6600cc);
+            border: 2px solid #9900ff;
         }
         
         .enemy-health {
             position: absolute;
-            top: -10px;
+            top: -12px;
             left: 0;
             width: 100%;
-            height: 3px;
-            background-color: #333;
+            height: 4px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 2px;
         }
         
         .enemy-health-fill {
             height: 100%;
-            background-color: #00ff00;
+            background: linear-gradient(90deg, #00ff00, #00cc66);
+            border-radius: 2px;
+            transition: width 0.3s;
         }
         
         .projectile {
             position: absolute;
-            width: 8px;
-            height: 8px;
-            background-color: #ffff00;
+            width: 10px;
+            height: 10px;
+            background-color: var(--warning-color);
             border-radius: 50%;
             z-index: 3;
-        }
-        
-        .base-projectile {
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            background-color: #ff00ff;
-            border-radius: 50%;
-            z-index: 3;
-            box-shadow: 0 0 5px #ff00ff;
+            box-shadow: 0 0 10px var(--warning-color);
         }
         
         .laser-beam {
             position: absolute;
-            background-color: #00ffff;
+            background: linear-gradient(90deg, rgba(0, 255, 255, 0.8), rgba(0, 200, 255, 0.8));
             z-index: 3;
-            opacity: 0.7;
+            opacity: 0.9;
+            filter: blur(1px);
         }
         
         #build-menu {
-            background-color: #16213e;
-            padding: 10px;
+            background-color: rgba(10, 25, 47, 0.9);
+            padding: 15px;
             display: flex;
             justify-content: center;
-            gap: 20px;
-            flex-shrink: 0;
+            gap: 25px;
+            border-top: 1px solid var(--primary-color);
+            z-index: 20;
         }
         
         .build-option {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 10px;
-            background-color: #0f3460;
-            border-radius: 5px;
+            padding: 12px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
             cursor: pointer;
-            transition: transform 0.2s;
-            width: 100px;
+            transition: all 0.2s;
+            width: 110px;
+            border: 1px solid rgba(0, 255, 170, 0.3);
         }
         
         .build-option:hover {
             transform: scale(1.05);
-            background-color: #1a5a8a;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-color: var(--primary-color);
         }
         
         .build-option.selected {
-            background-color: #e94560;
-            box-shadow: 0 0 10px #e94560;
+            background-color: rgba(0, 255, 170, 0.2);
+            border: 1px solid var(--primary-color);
+            box-shadow: 0 0 15px rgba(0, 255, 170, 0.5);
         }
         
         .build-option.disabled {
             opacity: 0.5;
-            cursor: not-allowed;
+            pointer-events: none;
         }
         
         .build-icon {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(0, 255, 170, 0.3);
+        }
+        
+        .build-name {
+            font-size: 14px;
             margin-bottom: 5px;
-            border-radius: 5px;
+            color: var(--light-color);
         }
         
         .build-cost {
             font-size: 12px;
-            color: #ffd700;
+            color: var(--warning-color);
         }
         
         .build-limit {
-            font-size: 10px;
-            color: #aaa;
-        }
-        
-        #preparation-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 20;
-        }
-        
-        #preparation-timer {
-            font-size: 48px;
-            font-weight: bold;
-            color: #ffd700;
-            margin-bottom: 20px;
-        }
-        
-        #wave-info {
-            font-size: 24px;
-            margin-bottom: 20px;
+            font-size: 11px;
+            color: var(--primary-color);
+            margin-top: 3px;
         }
         
         #game-over {
@@ -319,7 +378,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.9);
             display: none;
             flex-direction: column;
             justify-content: center;
@@ -329,139 +388,148 @@
         
         #game-over h1 {
             font-size: 48px;
-            color: #e94560;
+            color: var(--danger-color);
             margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 85, 85, 0.7);
+            animation: gameOverPulse 1.5s infinite;
+        }
+        
+        @keyframes gameOverPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        #game-over p {
+            font-size: 20px;
+            margin-bottom: 30px;
+            color: var(--light-color);
+        }
+        
+        #game-over span {
+            color: var(--primary-color);
+            font-weight: bold;
         }
         
         #restart-btn {
-            padding: 15px 30px;
-            background-color: #e94560;
-            color: white;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--dark-color);
             border: none;
-            border-radius: 5px;
+            border-radius: 30px;
             font-size: 18px;
+            font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(0, 255, 170, 0.5);
         }
         
         #restart-btn:hover {
-            background-color: #ff6b81;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 170, 0.8);
         }
         
         .tooltip {
             position: absolute;
-            background-color: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
+            background-color: rgba(10, 25, 47, 0.95);
+            color: var(--light-color);
+            padding: 15px;
+            border-radius: 8px;
             font-size: 14px;
             pointer-events: none;
             z-index: 100;
             max-width: 250px;
             display: none;
-            border: 1px solid #444;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--primary-color);
+            box-shadow: 0 0 15px rgba(0, 255, 170, 0.3);
         }
         
-        .upgrade-menu {
-            position: absolute;
-            background-color: rgba(0, 0, 0, 0.9);
-            border: 1px solid #444;
-            border-radius: 5px;
-            padding: 10px;
-            z-index: 200;
-            display: none;
-            width: 200px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
-        }
-        
-        .upgrade-menu h3 {
-            margin-top: 0;
-            color: #ffd700;
-            border-bottom: 1px solid #444;
+        .tooltip h3 {
+            margin: 0 0 10px 0;
+            color: var(--primary-color);
+            font-size: 16px;
+            border-bottom: 1px solid var(--primary-color);
             padding-bottom: 5px;
         }
         
-        .upgrade-stats {
-            margin-bottom: 10px;
-            font-size: 13px;
-            line-height: 1.4;
+        .tooltip p {
+            margin: 5px 0;
         }
         
-        .upgrade-btn {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            padding: 5px 10px;
-            font-size: 12px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 5px;
-        }
-        
-        .upgrade-btn:hover {
-            background-color: #45a049;
-        }
-        
-        .upgrade-cost {
-            color: #ffd700;
+        .tooltip span {
+            color: var(--primary-color);
             font-weight: bold;
         }
         
-        .close-btn {
+        #base-upgrade {
             position: absolute;
-            top: 5px;
-            right: 5px;
-            background: none;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--dark-color);
             border: none;
-            color: #aaa;
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-size: 12px;
+            font-weight: bold;
             cursor: pointer;
-            font-size: 14px;
+            display: none;
+            z-index: 11;
+            box-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
         }
         
-        .close-btn:hover {
-            color: #fff;
+        #base:hover #base-upgrade {
+            display: block;
         }
         
-        .building-count {
+        .upgrade-indicator {
             position: absolute;
             top: -10px;
-            left: -10px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-color);
+            color: var(--dark-color);
             font-size: 10px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 10px;
+            display: none;
+            animation: bounce 0.5s infinite alternate;
+        }
+        
+        @keyframes bounce {
+            from { transform: translateX(-50%) translateY(0); }
+            to { transform: translateX(-50%) translateY(-5px); }
+        }
+        
+        .building:hover .upgrade-indicator {
+            display: block;
+        }
+        
+        /* Efeitos sonoros (ocultos) */
+        .audio-element {
+            display: none;
         }
     </style>
 </head>
 <body>
     <div id="game-container">
         <div id="header">
-            <h1>Tower Defense Avançado</h1>
+            <div id="game-title">TOWER DEFENSE</div>
             <div id="game-info">
-                <div>Wave: <span id="wave-display">1</span></div>
-                <div>Diamantes: <span id="money-display">100</span></div>
-                <div>Base HP: <span id="base-hp">1000</span>/<span id="max-base-hp">1000</span></div>
-                <div>Nível Base: <span id="base-level">1</span></div>
+                <div class="info-box">Wave: <span id="wave-display">1</span></div>
+                <div class="info-box">Diamantes: <span id="money-display">100</span></div>
+                <div class="info-box">Base HP: <span id="base-hp">1000</span>/1000</div>
+                <div class="info-box">Base Level: <span id="base-level">1</span></div>
             </div>
+            <div id="wave-timer">Próxima Wave: <span id="timer-display">30</span>s</div>
         </div>
         
         <div id="game-board">
-            <div id="grid"></div>
-            <div id="base">BASE
-                <div class="base-level">Nível <span id="base-level-display">1</span></div>
-            </div>
-            
-            <div id="preparation-screen">
-                <div id="wave-info">Próxima Wave: <span id="next-wave">1</span></div>
-                <div id="preparation-timer">30</div>
-                <div>Tempo de preparação</div>
+            <div id="base">
+                BASE
+                <button id="base-upgrade">Upgrade</button>
             </div>
             
             <div id="game-over">
@@ -469,48 +537,45 @@
                 <p>Sua base foi destruída na wave <span id="final-wave">1</span></p>
                 <button id="restart-btn">Reiniciar</button>
             </div>
-            
-            <div class="upgrade-menu" id="upgrade-menu">
-                <button class="close-btn" id="close-upgrade-menu">×</button>
-                <h3 id="upgrade-title">Upgrade</h3>
-                <div class="upgrade-stats" id="upgrade-stats"></div>
-                <button class="upgrade-btn" id="upgrade-btn">Upgrade (<span id="upgrade-cost">0</span>)</button>
-            </div>
         </div>
         
         <div id="build-menu">
             <div class="build-option" data-type="miner" data-cost="25">
-                <div class="build-icon miner"></div>
-                <div>Mineradora (1)</div>
+                <div class="build-icon">⛏️</div>
+                <div class="build-name">Mineradora</div>
                 <div class="build-cost">Custo: 25</div>
-                <div class="build-limit">Limite: <span id="miner-limit">3</span></div>
+                <div class="build-limit">Limite: <span id="miner-limit">3/3</span></div>
             </div>
             <div class="build-option" data-type="cannon" data-cost="110">
-                <div class="build-icon cannon"></div>
-                <div>Canhão (2)</div>
+                <div class="build-icon">💣</div>
+                <div class="build-name">Canhão</div>
                 <div class="build-cost">Custo: 110</div>
-                <div class="build-limit">Limite: <span id="cannon-limit">1</span></div>
+                <div class="build-limit">Limite: <span id="cannon-limit">2/2</span></div>
             </div>
             <div class="build-option" data-type="wall" data-cost="15">
-                <div class="build-icon wall"></div>
-                <div>Muro (3)</div>
+                <div class="build-icon">🧱</div>
+                <div class="build-name">Muro</div>
                 <div class="build-cost">Custo: 15</div>
-                <div class="build-limit">Limite: <span id="wall-limit">5</span></div>
+                <div class="build-limit">Limite: <span id="wall-limit">5/5</span></div>
             </div>
             <div class="build-option disabled" data-type="laser" data-cost="750">
-                <div class="build-icon laser"></div>
-                <div>Torre Laser (4)</div>
+                <div class="build-icon">⚡</div>
+                <div class="build-name">Torre Laser</div>
                 <div class="build-cost">Custo: 750</div>
-                <div class="build-limit">Disponível no nível 5</div>
-            </div>
-            <div class="build-option" id="upgrade-base-btn">
-                <div class="build-icon" style="background-color: #e94560;"></div>
-                <div>Upgrade Base</div>
-                <div class="build-cost">Custo: <span id="base-upgrade-cost">700</span></div>
+                <div class="build-limit">Disponível no level 7</div>
             </div>
         </div>
         
         <div class="tooltip" id="tooltip"></div>
+
+        <!-- Efeitos sonoros -->
+        <audio id="build-sound" class="audio-element" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-interface-beep-221.mp3"></audio>
+        <audio id="upgrade-sound" class="audio-element" src="https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3"></audio>
+        <audio id="attack-sound" class="audio-element" src="https://assets.mixkit.co/sfx/preview/mixkit-short-laser-gun-shot-1670.mp3"></audio>
+        <audio id="laser-sound" class="audio-element" src="https://assets.mixkit.co/sfx/preview/mixkit-sci-fi-laser-shot-1681.mp3"></audio>
+        <audio id="enemy-death-sound" class="audio-element" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-explosion-2759.mp3"></audio>
+        <audio id="game-over-sound" class="audio-element" src="https://assets.mixkit.co/sfx/preview/mixkit-retro-arcade-lose-2027.mp3"></audio>
+        <audio id="base-upgrade-sound" class="audio-element" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3"></audio>
     </div>
 
     <script>
@@ -521,6 +586,7 @@
             baseHP: 1000,
             maxBaseHP: 1000,
             baseLevel: 1,
+            baseUpgradeCost: 800,
             gameOver: false,
             preparationTime: 30,
             isPreparationPhase: true,
@@ -529,14 +595,12 @@
             enemies: [],
             minerals: [],
             projectiles: [],
-            baseProjectiles: [],
             laserBeams: [],
-            lastBaseAttackTime: 0,
             buildingLimits: {
-                miner: 3,
-                cannon: 1,
-                wall: 5,
-                laser: 0
+                miner: { current: 0, max: 3 },
+                cannon: { current: 0, max: 2 },
+                wall: { current: 0, max: 5 },
+                laser: { current: 0, max: 0 }
             },
             enemySpawnPoints: [
                 { x: 0, y: 0 },
@@ -555,7 +619,7 @@
                     upgradeCostMultiplier: 1.3,
                     color: "#2b7a0b",
                     size: 40,
-                    shape: "hexagon"
+                    icon: "⛏️"
                 },
                 cannon: {
                     name: "Canhão",
@@ -570,7 +634,7 @@
                     upgradeCostMultiplier: 1.3,
                     color: "#7d5a50",
                     size: 40,
-                    shape: "octagon"
+                    icon: "💣"
                 },
                 wall: {
                     name: "Muro",
@@ -579,9 +643,9 @@
                     hpMultiplier: 1.2,
                     upgradeCost: 15,
                     upgradeCostMultiplier: 1.3,
-                    color: "#7d5a50",
+                    color: "#555555",
                     size: 40,
-                    shape: "square"
+                    icon: "🧱"
                 },
                 laser: {
                     name: "Torre Laser",
@@ -598,25 +662,29 @@
                     upgradeCostMultiplier: 1.3,
                     color: "#3a0ca3",
                     size: 40,
-                    shape: "circle"
+                    icon: "⚡"
                 }
-            },
-            baseStats: {
-                baseUpgradeCost: 700,
-                upgradeCostMultiplier: 1.3,
-                hpMultiplier: 1.2,
-                baseAttackSpeed: 3,
-                baseDamage: 40,
-                damageMultiplier: 1.15,
-                attackSpeedMultiplier: 1.03,
-                range: 300
             },
             enemyStats: {
                 baseHP: 55,
                 hpMultiplier: 1.5,
                 hpIncreaseWaveInterval: 5,
                 speed: 50,
-                damage: 10
+                damage: 100,
+                types: [
+                    { color: "#ff5555", border: "#cc0000", class: "enemy-type1" },
+                    { color: "#ff9966", border: "#cc6600", class: "enemy-type2" },
+                    { color: "#aa55ff", border: "#6600cc", class: "enemy-type3" }
+                ]
+            },
+            sounds: {
+                build: document.getElementById('build-sound'),
+                upgrade: document.getElementById('upgrade-sound'),
+                attack: document.getElementById('attack-sound'),
+                laser: document.getElementById('laser-sound'),
+                enemyDeath: document.getElementById('enemy-death-sound'),
+                gameOver: document.getElementById('game-over-sound'),
+                baseUpgrade: document.getElementById('base-upgrade-sound')
             }
         };
 
@@ -624,66 +692,51 @@
         const elements = {
             gameBoard: document.getElementById('game-board'),
             base: document.getElementById('base'),
-            baseLevelDisplay: document.getElementById('base-level-display'),
+            baseUpgradeBtn: document.getElementById('base-upgrade'),
             waveDisplay: document.getElementById('wave-display'),
             moneyDisplay: document.getElementById('money-display'),
             baseHpDisplay: document.getElementById('base-hp'),
-            maxBaseHpDisplay: document.getElementById('max-base-hp'),
-            baseLevelText: document.getElementById('base-level'),
-            preparationScreen: document.getElementById('preparation-screen'),
-            preparationTimer: document.getElementById('preparation-timer'),
-            nextWaveDisplay: document.getElementById('next-wave'),
+            baseLevelDisplay: document.getElementById('base-level'),
+            waveTimer: document.getElementById('wave-timer'),
+            timerDisplay: document.getElementById('timer-display'),
             gameOverScreen: document.getElementById('game-over'),
             finalWaveDisplay: document.getElementById('final-wave'),
             restartBtn: document.getElementById('restart-btn'),
             buildOptions: document.querySelectorAll('.build-option'),
             tooltip: document.getElementById('tooltip'),
-            upgradeMenu: document.getElementById('upgrade-menu'),
-            upgradeTitle: document.getElementById('upgrade-title'),
-            upgradeStats: document.getElementById('upgrade-stats'),
-            upgradeCost: document.getElementById('upgrade-cost'),
-            upgradeBtn: document.getElementById('upgrade-btn'),
-            closeUpgradeMenu: document.getElementById('close-upgrade-menu'),
             minerLimit: document.getElementById('miner-limit'),
             cannonLimit: document.getElementById('cannon-limit'),
-            wallLimit: document.getElementById('wall-limit'),
-            upgradeBaseBtn: document.getElementById('upgrade-base-btn'),
-            baseUpgradeCost: document.getElementById('base-upgrade-cost')
+            wallLimit: document.getElementById('wall-limit')
         };
-
-        // Current building being upgraded
-        let currentUpgradeTarget = null;
 
         // Game initialization
         function initGame() {
             gameState.wave = 0;
             gameState.money = 100;
-            gameState.baseLevel = 1;
-            gameState.maxBaseHP = 1000;
             gameState.baseHP = gameState.maxBaseHP;
+            gameState.baseLevel = 1;
+            gameState.baseUpgradeCost = 800;
             gameState.gameOver = false;
             gameState.isPreparationPhase = true;
             gameState.buildings = [];
             gameState.enemies = [];
             gameState.minerals = [];
             gameState.projectiles = [];
-            gameState.baseProjectiles = [];
             gameState.laserBeams = [];
-            gameState.lastBaseAttackTime = 0;
             
             // Reset building limits
             gameState.buildingLimits = {
-                miner: 3,
-                cannon: 1,
-                wall: 5,
-                laser: 0
+                miner: { current: 0, max: 3 },
+                cannon: { current: 0, max: 2 },
+                wall: { current: 0, max: 5 },
+                laser: { current: 0, max: 0 }
             };
             
-            // Update building limit displays
-            updateBuildingLimits();
+            // Update building limits display
+            updateBuildingLimitsDisplay();
             
             // Clear the game board
-            document.querySelectorAll('.building, .enemy, .mineral, .projectile, .base-projectile, .laser-beam').forEach(el => el.remove());
+            document.querySelectorAll('.building, .enemy, .mineral, .projectile, .laser-beam').forEach(el => el.remove());
             
             // Update displays
             updateDisplays();
@@ -696,12 +749,10 @@
             
             // Hide game over screen
             elements.gameOverScreen.style.display = 'none';
+            elements.waveTimer.style.display = 'none';
             
-            // Hide upgrade menu
-            elements.upgradeMenu.style.display = 'none';
-            
-            // Update base upgrade cost
-            updateBaseUpgradeCost();
+            // Disable laser tower initially
+            document.querySelector('.build-option[data-type="laser"]').classList.add('disabled');
         }
 
         // Update all game displays
@@ -709,51 +760,27 @@
             elements.waveDisplay.textContent = gameState.wave;
             elements.moneyDisplay.textContent = gameState.money;
             elements.baseHpDisplay.textContent = gameState.baseHP;
-            elements.maxBaseHpDisplay.textContent = gameState.maxBaseHP;
-            elements.baseLevelText.textContent = gameState.baseLevel;
             elements.baseLevelDisplay.textContent = gameState.baseLevel;
-            elements.nextWaveDisplay.textContent = gameState.wave + 1;
         }
 
         // Update building limits display
-        function updateBuildingLimits() {
-            elements.minerLimit.textContent = gameState.buildingLimits.miner;
-            elements.cannonLimit.textContent = gameState.buildingLimits.cannon;
-            elements.wallLimit.textContent = gameState.buildingLimits.wall;
-            
-            // Enable/disable laser tower based on base level
-            const laserOption = document.querySelector('.build-option[data-type="laser"]');
-            if (gameState.baseLevel >= 5) {
-                laserOption.classList.remove('disabled');
-                laserOption.querySelector('.build-limit').textContent = `Limite: ${gameState.buildingLimits.laser}`;
-                gameState.buildingLimits.laser = 1; // Allow 1 laser tower at level 5
-            } else {
-                laserOption.classList.add('disabled');
-                laserOption.querySelector('.build-limit').textContent = 'Disponível no nível 5';
-                gameState.buildingLimits.laser = 0;
-            }
-        }
-
-        // Update base upgrade cost display
-        function updateBaseUpgradeCost() {
-            const cost = Math.floor(gameState.baseStats.baseUpgradeCost * Math.pow(gameState.baseStats.upgradeCostMultiplier, gameState.baseLevel - 1));
-            elements.baseUpgradeCost.textContent = cost;
+        function updateBuildingLimitsDisplay() {
+            elements.minerLimit.textContent = `${gameState.buildingLimits.miner.current}/${gameState.buildingLimits.miner.max}`;
+            elements.cannonLimit.textContent = `${gameState.buildingLimits.cannon.current}/${gameState.buildingLimits.cannon.max}`;
+            elements.wallLimit.textContent = `${gameState.buildingLimits.wall.current}/${gameState.buildingLimits.wall.max}`;
         }
 
         // Start preparation phase
         function startPreparationPhase() {
             gameState.isPreparationPhase = true;
-            elements.preparationScreen.style.display = 'flex';
-            
-            // Update building limits based on base level
-            updateBuildingLimitsForLevel();
+            elements.waveTimer.style.display = 'block';
             
             let timer = gameState.preparationTime;
-            elements.preparationTimer.textContent = timer;
+            elements.timerDisplay.textContent = timer;
             
             const countdown = setInterval(() => {
                 timer--;
-                elements.preparationTimer.textContent = timer;
+                elements.timerDisplay.textContent = timer;
                 
                 if (timer <= 0) {
                     clearInterval(countdown);
@@ -762,28 +789,15 @@
             }, 1000);
         }
 
-        // Update building limits based on base level
-        function updateBuildingLimitsForLevel() {
-            gameState.buildingLimits.miner = 3 + Math.floor(gameState.baseLevel / 2);
-            gameState.buildingLimits.cannon = 1 + Math.floor(gameState.baseLevel / 3);
-            gameState.buildingLimits.wall = 5 + gameState.baseLevel;
-            
-            if (gameState.baseLevel >= 5) {
-                gameState.buildingLimits.laser = 1 + Math.floor((gameState.baseLevel - 4) / 2);
-            }
-            
-            updateBuildingLimits();
-        }
-
         // Start a new wave
         function startWave() {
             gameState.isPreparationPhase = false;
-            elements.preparationScreen.style.display = 'none';
+            elements.waveTimer.style.display = 'none';
             gameState.wave++;
             updateDisplays();
             
-            // Spawn enemies
-            const enemyCount = Math.floor(5 * Math.pow(1.2, gameState.wave));
+            // Spawn enemies (1.1x more each wave)
+            const enemyCount = Math.floor(5 * Math.pow(1.1, gameState.wave));
             spawnEnemies(enemyCount);
         }
 
@@ -793,11 +807,7 @@
             const boardHeight = elements.gameBoard.clientHeight;
             
             // Calculate enemy HP based on wave
-            let enemyHP = gameState.enemyStats.baseHP;
-            if (gameState.wave >= gameState.enemyStats.hpIncreaseWaveInterval) {
-                const multiplierCount = Math.floor(gameState.wave / gameState.enemyStats.hpIncreaseWaveInterval);
-                enemyHP *= Math.pow(gameState.enemyStats.hpMultiplier, multiplierCount);
-            }
+            let enemyHP = gameState.enemyStats.baseHP * Math.pow(gameState.enemyStats.hpMultiplier, Math.floor(gameState.wave / gameState.enemyStats.hpIncreaseWaveInterval));
             
             for (let i = 0; i < count; i++) {
                 const spawnPoint = gameState.enemySpawnPoints[
@@ -817,8 +827,11 @@
                     y = boardHeight - Math.random() * 100;
                 }
                 
+                // Random enemy type
+                const enemyType = gameState.enemyStats.types[Math.floor(Math.random() * gameState.enemyStats.types.length)];
+                
                 const enemy = document.createElement('div');
-                enemy.className = 'enemy';
+                enemy.className = `enemy ${enemyType.class}`;
                 enemy.style.left = `${x}px`;
                 enemy.style.top = `${y}px`;
                 
@@ -880,9 +893,8 @@
                 return false;
             }
             
-            // Check if building limit reached
-            if (getBuildingCount(type) >= gameState.buildingLimits[type]) {
-                alert(`Limite de ${stats.name.toLowerCase()}s atingido!`);
+            // Check building limit
+            if (gameState.buildingLimits[type].current >= gameState.buildingLimits[type].max) {
                 return false;
             }
             
@@ -921,14 +933,6 @@
             building.style.top = `${snappedY}px`;
             building.style.width = `${stats.size}px`;
             building.style.height = `${stats.size}px`;
-            building.style.backgroundColor = stats.color;
-            building.style.borderColor = stats.color;
-            
-            // Add building count indicator
-            const countIndicator = document.createElement('div');
-            countIndicator.className = 'building-count';
-            countIndicator.textContent = getBuildingCount(type) + 1;
-            building.appendChild(countIndicator);
             
             const levelDisplay = document.createElement('div');
             levelDisplay.className = 'building-level';
@@ -945,6 +949,11 @@
             healthBar.appendChild(healthFill);
             building.appendChild(healthBar);
             
+            const upgradeIndicator = document.createElement('div');
+            upgradeIndicator.className = 'upgrade-indicator';
+            upgradeIndicator.textContent = '↑';
+            building.appendChild(upgradeIndicator);
+            
             elements.gameBoard.appendChild(building);
             
             // Add building to game state
@@ -958,7 +967,6 @@
                 maxHP: stats.hp,
                 healthFill,
                 lastAttackTime: 0,
-                countIndicator,
                 // Type-specific properties
                 ...(type === 'miner' ? {
                     lastProductionTime: 0,
@@ -981,15 +989,21 @@
             };
             
             gameState.buildings.push(newBuilding);
+            gameState.buildingLimits[type].current++;
+            updateBuildingLimitsDisplay();
             
             // Deduct cost
             gameState.money -= stats.cost;
             updateDisplays();
             
+            // Play sound
+            gameState.sounds.build.currentTime = 0;
+            gameState.sounds.build.play();
+            
             // Set up event listeners
             building.addEventListener('click', (e) => {
                 e.stopPropagation();
-                showUpgradeMenu(newBuilding);
+                upgradeBuilding(newBuilding);
             });
             
             building.addEventListener('mouseenter', () => showTooltip(newBuilding));
@@ -998,84 +1012,13 @@
             return true;
         }
 
-        // Get count of a specific building type
-        function getBuildingCount(type) {
-            return gameState.buildings.filter(b => b.type === type).length;
-        }
-
-        // Show upgrade menu for a building
-        function showUpgradeMenu(building) {
-            if (gameState.isPreparationPhase) {
-                currentUpgradeTarget = building;
-                const stats = gameState.buildingStats[building.type];
-                const upgradeCost = Math.floor(stats.upgradeCost * Math.pow(stats.upgradeCostMultiplier, building.level - 1));
-                
-                elements.upgradeTitle.textContent = `Upgrade ${stats.name} (Nível ${building.level})`;
-                elements.upgradeCost.textContent = upgradeCost;
-                
-                let statsHTML = `HP: ${Math.floor(building.hp)}/${Math.floor(building.maxHP)}<br>`;
-                statsHTML += `Custo: ${upgradeCost}<br><br>`;
-                
-                switch (building.type) {
-                    case 'miner':
-                        statsHTML += `Produção: ${building.productionRate.toFixed(1)}/s<br>`;
-                        statsHTML += `Próximo nível: ${(building.productionRate * stats.productionMultiplier).toFixed(1)}/s`;
-                        break;
-                    case 'cannon':
-                        statsHTML += `Dano: ${building.damage.toFixed(1)}<br>`;
-                        statsHTML += `Velocidade: ${(1 / building.attackSpeed).toFixed(1)}/s<br>`;
-                        statsHTML += `Alcance: ${building.range}px<br><br>`;
-                        statsHTML += `Próximo nível:<br>`;
-                        statsHTML += `Dano: ${(building.damage * stats.damageMultiplier).toFixed(1)}<br>`;
-                        statsHTML += `Velocidade: ${(1 / (building.attackSpeed / stats.attackSpeedMultiplier)).toFixed(1)}/s`;
-                        break;
-                    case 'wall':
-                        statsHTML += `Próximo nível:<br>`;
-                        statsHTML += `HP: ${Math.floor(building.maxHP * stats.hpMultiplier)}`;
-                        break;
-                    case 'laser':
-                        statsHTML += `Dano: ${building.damage.toFixed(1)}<br>`;
-                        statsHTML += `Velocidade: ${(1 / building.attackSpeed).toFixed(1)}/s<br>`;
-                        statsHTML += `Alcance: ${building.range}px<br>`;
-                        statsHTML += `Atordoa: ${building.stunDuration}s<br>`;
-                        statsHTML += `Alvos: ${building.chainTargets}<br><br>`;
-                        statsHTML += `Próximo nível:<br>`;
-                        statsHTML += `Dano: ${(building.damage * stats.damageMultiplier).toFixed(1)}<br>`;
-                        statsHTML += `Velocidade: ${(1 / (building.attackSpeed / stats.attackSpeedMultiplier)).toFixed(1)}/s`;
-                        break;
-                }
-                
-                elements.upgradeStats.innerHTML = statsHTML;
-                
-                // Position menu near building
-                const buildingRect = building.element.getBoundingClientRect();
-                const boardRect = elements.gameBoard.getBoundingClientRect();
-                
-                let left = buildingRect.left - boardRect.left + buildingRect.width;
-                let top = buildingRect.top - boardRect.top;
-                
-                // Adjust if going off screen
-                if (left + 200 > boardRect.width) {
-                    left = buildingRect.left - boardRect.left - 200;
-                }
-                if (top + 200 > boardRect.height) {
-                    top = boardRect.height - 200;
-                }
-                
-                elements.upgradeMenu.style.left = `${left}px`;
-                elements.upgradeMenu.style.top = `${top}px`;
-                elements.upgradeMenu.style.display = 'block';
-            }
-        }
-
-        // Hide upgrade menu
-        function hideUpgradeMenu() {
-            elements.upgradeMenu.style.display = 'none';
-            currentUpgradeTarget = null;
-        }
-
         // Upgrade building
         function upgradeBuilding(building) {
+            // Check if building can be upgraded further (based on base level)
+            if (building.level >= gameState.baseLevel) {
+                return;
+            }
+            
             const stats = gameState.buildingStats[building.type];
             const upgradeCost = Math.floor(stats.upgradeCost * Math.pow(stats.upgradeCostMultiplier, building.level - 1));
             
@@ -1109,68 +1052,145 @@
                 building.hp = building.maxHP;
                 building.healthFill.style.width = '100%';
                 
+                // Play sound
+                gameState.sounds.upgrade.currentTime = 0;
+                gameState.sounds.upgrade.play();
+                
                 updateDisplays();
-                hideUpgradeMenu();
+                showTooltip(building);
+                
+                // Visual feedback
+                building.element.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    building.element.style.transform = 'scale(1)';
+                }, 300);
             }
         }
 
         // Upgrade base
         function upgradeBase() {
-            const cost = Math.floor(gameState.baseStats.baseUpgradeCost * Math.pow(gameState.baseStats.upgradeCostMultiplier, gameState.baseLevel - 1));
-            
-            if (gameState.money >= cost) {
-                gameState.money -= cost;
+            if (gameState.money >= gameState.baseUpgradeCost) {
+                gameState.money -= gameState.baseUpgradeCost;
                 gameState.baseLevel++;
-                gameState.maxBaseHP *= gameState.baseStats.hpMultiplier;
+                gameState.baseUpgradeCost = Math.floor(gameState.baseUpgradeCost * 1.5);
+                
+                // Increase base HP
+                gameState.maxBaseHP *= 1.2;
                 gameState.baseHP = gameState.maxBaseHP;
                 
+                // Update building limits based on base level
+                if (gameState.baseLevel >= 7) {
+                    gameState.buildingLimits.laser.max = 1;
+                    document.querySelector('.build-option[data-type="laser"]').classList.remove('disabled');
+                }
+                
+                if (gameState.baseLevel >= 10) {
+                    gameState.buildingLimits.miner.max = 5;
+                    gameState.buildingLimits.cannon.max = 4;
+                    gameState.buildingLimits.wall.max = 8;
+                    gameState.buildingLimits.laser.max = 2;
+                } else if (gameState.baseLevel >= 5) {
+                    gameState.buildingLimits.miner.max = 4;
+                    gameState.buildingLimits.cannon.max = 3;
+                    gameState.buildingLimits.wall.max = 7;
+                }
+                
+                updateBuildingLimitsDisplay();
                 updateDisplays();
-                updateBaseUpgradeCost();
-                updateBuildingLimitsForLevel();
+                
+                // Play sound
+                gameState.sounds.baseUpgrade.currentTime = 0;
+                gameState.sounds.baseUpgrade.play();
                 
                 // Visual feedback
-                elements.base.style.transform = 'scale(1.1)';
+                elements.base.style.transform = 'translate(-50%, -50%) scale(1.2)';
                 setTimeout(() => {
-                    elements.base.style.transform = 'scale(1)';
-                }, 200);
+                    elements.base.style.transform = 'translate(-50%, -50%) scale(1)';
+                }, 300);
             }
         }
 
         // Show tooltip for building
         function showTooltip(building) {
             const stats = gameState.buildingStats[building.type];
+            const upgradeCost = Math.floor(stats.upgradeCost * Math.pow(stats.upgradeCostMultiplier, building.level - 1));
             
-            let tooltipText = `<strong>${stats.name} (Nível ${building.level})</strong><br>`;
-            tooltipText += `HP: ${Math.floor(building.hp)}/${Math.floor(building.maxHP)}<br>`;
+            let tooltipText = `<h3>${stats.name} (Nível ${building.level})</h3>`;
+            tooltipText += `<p><strong>HP:</strong> ${Math.floor(building.hp)}/${Math.floor(building.maxHP)}</p>`;
+            
+            if (building.level < gameState.baseLevel) {
+                tooltipText += `<p><strong>Upgrade:</strong> ${upgradeCost} diamantes (Nível ${building.level + 1})</p>`;
+            } else {
+                tooltipText += `<p><strong>Upgrade:</strong> Melhore sua base para nível ${gameState.baseLevel + 1} primeiro</p>`;
+            }
             
             switch (building.type) {
                 case 'miner':
-                    tooltipText += `Produção: ${building.productionRate.toFixed(1)}/s<br>`;
+                    tooltipText += `<p><strong>Produção:</strong> ${building.productionRate.toFixed(1)} diamantes/s</p>`;
                     break;
                 case 'cannon':
-                    tooltipText += `Dano: ${building.damage.toFixed(1)}<br>`;
-                    tooltipText += `Velocidade: ${(1 / building.attackSpeed).toFixed(1)}/s<br>`;
-                    tooltipText += `Alcance: ${building.range}px<br>`;
+                    tooltipText += `<p><strong>Dano:</strong> ${building.damage.toFixed(1)}</p>`;
+                    tooltipText += `<p><strong>Velocidade:</strong> ${(1 / building.attackSpeed).toFixed(1)} ataques/s</p>`;
+                    tooltipText += `<p><strong>Alcance:</strong> ${building.range}px</p>`;
                     break;
                 case 'wall':
-                    // No special stats for walls
+                    tooltipText += `<p><strong>Defesa:</strong> ${building.maxHP.toFixed(0)} HP</p>`;
                     break;
                 case 'laser':
-                    tooltipText += `Dano: ${building.damage.toFixed(1)}<br>`;
-                    tooltipText += `Velocidade: ${(1 / building.attackSpeed).toFixed(1)}/s<br>`;
-                    tooltipText += `Alcance: ${building.range}px<br>`;
-                    tooltipText += `Atordoa: ${building.stunDuration}s<br>`;
-                    tooltipText += `Alvos: ${building.chainTargets}<br>`;
+                    tooltipText += `<p><strong>Dano:</strong> ${building.damage.toFixed(1)}</p>`;
+                    tooltipText += `<p><strong>Velocidade:</strong> ${(1 / building.attackSpeed).toFixed(1)} ataques/s</p>`;
+                    tooltipText += `<p><strong>Alcance:</strong> ${building.range}px</p>`;
+                    tooltipText += `<p><strong>Atordoa:</strong> ${building.stunDuration}s</p>`;
+                    tooltipText += `<p><strong>Alvos:</strong> ${building.chainTargets}</p>`;
                     break;
             }
             
-            tooltipText += `<br>Clique para melhorar`;
+            tooltipText += `<p><em>Clique para melhorar</em></p>`;
             
             elements.tooltip.innerHTML = tooltipText;
             elements.tooltip.style.display = 'block';
             
             // Position tooltip near building
             const rect = building.element.getBoundingClientRect();
+            elements.tooltip.style.left = `${rect.right + 5}px`;
+            elements.tooltip.style.top = `${rect.top}px`;
+        }
+
+        // Show tooltip for base
+        function showBaseTooltip() {
+            const upgradeCost = gameState.baseUpgradeCost;
+            const nextLevel = gameState.baseLevel + 1;
+            
+            let tooltipText = `<h3>Base (Nível ${gameState.baseLevel})</h3>`;
+            tooltipText += `<p><strong>HP:</strong> ${gameState.baseHP}/${gameState.maxBaseHP}</p>`;
+            
+            if (gameState.baseLevel < 100) {
+                tooltipText += `<p><strong>Upgrade para nível ${nextLevel}:</strong> ${upgradeCost} diamantes</p>`;
+                
+                // Show benefits of next level
+                tooltipText += `<p><strong>Benefícios:</strong></p>`;
+                tooltipText += `<ul>`;
+                tooltipText += `<li>+20% HP da base</li>`;
+                
+                if (nextLevel === 7) {
+                    tooltipText += `<li>Desbloqueia Torre Laser</li>`;
+                }
+                
+                if (nextLevel === 5 || nextLevel === 10 || nextLevel === 15 || nextLevel === 20) {
+                    tooltipText += `<li>Aumenta limite de construções</li>`;
+                }
+                
+                tooltipText += `<li>Permite upgrades até nível ${nextLevel}</li>`;
+                tooltipText += `</ul>`;
+            } else {
+                tooltipText += `<p><strong>Nível máximo alcançado!</strong></p>`;
+            }
+            
+            elements.tooltip.innerHTML = tooltipText;
+            elements.tooltip.style.display = 'block';
+            
+            // Position tooltip near base
+            const rect = elements.base.getBoundingClientRect();
             elements.tooltip.style.left = `${rect.right + 5}px`;
             elements.tooltip.style.top = `${rect.top}px`;
         }
@@ -1193,9 +1213,6 @@
             // Update projectiles
             updateProjectiles();
             
-            // Update base projectiles
-            updateBaseProjectiles(timestamp);
-            
             // Update laser beams
             updateLaserBeams();
             
@@ -1214,6 +1231,8 @@
                 if (building.hp <= 0) {
                     building.element.remove();
                     gameState.buildings = gameState.buildings.filter(b => b !== building);
+                    gameState.buildingLimits[building.type].current--;
+                    updateBuildingLimitsDisplay();
                     continue;
                 }
                 
@@ -1294,8 +1313,8 @@
                     // Create projectile
                     const projectile = document.createElement('div');
                     projectile.className = 'projectile';
-                    projectile.style.left = `${building.x + building.element.clientWidth / 2 - 4}px`;
-                    projectile.style.top = `${building.y + building.element.clientHeight / 2 - 4}px`;
+                    projectile.style.left = `${building.x + building.element.clientWidth / 2 - 5}px`;
+                    projectile.style.top = `${building.y + building.element.clientHeight / 2 - 5}px`;
                     elements.gameBoard.appendChild(projectile);
                     
                     gameState.projectiles.push({
@@ -1308,6 +1327,10 @@
                         damage: building.damage,
                         target: closestEnemy
                     });
+                    
+                    // Play sound
+                    gameState.sounds.attack.currentTime = 0;
+                    gameState.sounds.attack.play();
                     
                     // Visual feedback
                     building.element.style.transform = 'scale(1.1)';
@@ -1359,6 +1382,10 @@
                         duration: 300 // milliseconds
                     });
                     
+                    // Play sound
+                    gameState.sounds.laser.currentTime = 0;
+                    gameState.sounds.laser.play();
+                    
                     // Apply damage and stun
                     for (const target of targets) {
                         target.enemy.hp -= building.damage;
@@ -1372,7 +1399,7 @@
                         target.enemy.element.style.backgroundColor = '#00ffff';
                         setTimeout(() => {
                             if (target.enemy.stunTimer <= timestamp) {
-                                target.enemy.element.style.backgroundColor = '#ff0000';
+                                target.enemy.element.style.backgroundColor = '';
                             }
                         }, building.stunDuration * 1000);
                     }
@@ -1381,62 +1408,6 @@
                     building.element.style.transform = 'scale(1.1)';
                     setTimeout(() => {
                         building.element.style.transform = 'scale(1)';
-                    }, 100);
-                }
-            }
-        }
-
-        // Update base attacks
-        function updateBaseProjectiles(timestamp) {
-            if (!gameState.isPreparationPhase && timestamp - gameState.lastBaseAttackTime > (gameState.baseStats.baseAttackSpeed / gameState.baseStats.attackSpeedMultiplier) * 1000) {
-                // Find closest enemy
-                let closestEnemy = null;
-                let closestDistance = Infinity;
-                
-                const baseRect = elements.base.getBoundingClientRect();
-                const baseX = baseRect.left + baseRect.width / 2;
-                const baseY = baseRect.top + baseRect.height / 2;
-                
-                for (const enemy of gameState.enemies) {
-                    if (enemy.isStunned) continue;
-                    
-                    const distance = Math.sqrt(
-                        Math.pow(baseX - enemy.x, 2) +
-                        Math.pow(baseY - enemy.y, 2)
-                    );
-                    
-                    if (distance < gameState.baseStats.range && distance < closestDistance) {
-                        closestEnemy = enemy;
-                        closestDistance = distance;
-                    }
-                }
-                
-                // Attack if enemy found
-                if (closestEnemy) {
-                    gameState.lastBaseAttackTime = timestamp;
-                    
-                    // Create projectile
-                    const projectile = document.createElement('div');
-                    projectile.className = 'base-projectile';
-                    projectile.style.left = `${baseX - 6}px`;
-                    projectile.style.top = `${baseY - 6}px`;
-                    elements.gameBoard.appendChild(projectile);
-                    
-                    gameState.baseProjectiles.push({
-                        element: projectile,
-                        startX: baseX,
-                        startY: baseY,
-                        targetX: closestEnemy.x + closestEnemy.element.clientWidth / 2,
-                        targetY: closestEnemy.y + closestEnemy.element.clientHeight / 2,
-                        speed: 400, // pixels per second
-                        damage: gameState.baseStats.baseDamage * Math.pow(gameState.baseStats.damageMultiplier, gameState.baseLevel - 1),
-                        target: closestEnemy
-                    });
-                    
-                    // Visual feedback
-                    elements.base.style.transform = 'scale(1.1)';
-                    setTimeout(() => {
-                        elements.base.style.transform = 'scale(1)';
                     }, 100);
                 }
             }
@@ -1456,7 +1427,7 @@
                 // Check if enemy is dead
                 if (enemy.hp <= 0) {
                     // Chance to drop mineral
-                    if (Math.random() < 0.2) {
+                    if (Math.random() < 0.3) {
                         const mineral = document.createElement('div');
                         mineral.className = 'mineral';
                         mineral.style.left = `${enemy.x}px`;
@@ -1470,6 +1441,10 @@
                         });
                     }
                     
+                    // Play sound
+                    gameState.sounds.enemyDeath.currentTime = 0;
+                    gameState.sounds.enemyDeath.play();
+                    
                     enemy.element.remove();
                     gameState.enemies.splice(i, 1);
                     continue;
@@ -1479,7 +1454,7 @@
                 if (enemy.isStunned) {
                     if (timestamp >= enemy.stunTimer) {
                         enemy.isStunned = false;
-                        enemy.element.style.backgroundColor = '#ff0000';
+                        enemy.element.style.backgroundColor = '';
                     }
                     continue;
                 }
@@ -1494,30 +1469,55 @@
                 enemy.element.style.left = `${enemy.x}px`;
                 enemy.element.style.top = `${enemy.y}px`;
                 
-                // Check collision with buildings
+                // Check collision with base
+                const distanceToBase = Math.sqrt(Math.pow(baseX - enemy.x, 2) + Math.pow(baseY - enemy.y, 2));
+                if (distanceToBase < 40) {
+                    // Damage base
+                    gameState.baseHP -= enemy.damage;
+                    elements.baseHpDisplay.textContent = gameState.baseHP;
+                    
+                    // Visual feedback
+                    elements.base.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                    setTimeout(() => {
+                        elements.base.style.transform = 'translate(-50%, -50%) scale(1)';
+                    }, 100);
+                    
+                    // Remove enemy
+                    enemy.element.remove();
+                    gameState.enemies.splice(i, 1);
+                    
+                    // Check if base is destroyed
+                    if (gameState.baseHP <= 0) {
+                        gameOver();
+                    }
+                }
+                
+                // Check collision with walls
                 for (const building of gameState.buildings) {
-                    const buildingCenterX = building.x + building.element.clientWidth / 2;
-                    const buildingCenterY = building.y + building.element.clientHeight / 2;
-                    
-                    const distance = Math.sqrt(
-                        Math.pow(enemy.x - buildingCenterX, 2) +
-                        Math.pow(enemy.y - buildingCenterY, 2)
-                    );
-                    
-                    if (distance < 30) {
-                        // Damage building
-                        building.hp -= enemy.damage;
+                    if (building.type === 'wall') {
+                        const buildingCenterX = building.x + building.element.clientWidth / 2;
+                        const buildingCenterY = building.y + building.element.clientHeight / 2;
                         
-                        // Visual feedback
-                        building.element.style.transform = 'scale(1.1)';
-                        setTimeout(() => {
-                            building.element.style.transform = 'scale(1)';
-                        }, 100);
+                        const distance = Math.sqrt(
+                            Math.pow(enemy.x - buildingCenterX, 2) +
+                            Math.pow(enemy.y - buildingCenterY, 2)
+                        );
                         
-                        // Move enemy back slightly
-                        const pushAngle = Math.atan2(enemy.y - buildingCenterY, enemy.x - buildingCenterX);
-                        enemy.x += Math.cos(pushAngle) * 5;
-                        enemy.y += Math.sin(pushAngle) * 5;
+                        if (distance < 30) {
+                            // Damage wall
+                            building.hp -= enemy.damage;
+                            
+                            // Visual feedback
+                            building.element.style.transform = 'scale(1.1)';
+                            setTimeout(() => {
+                                building.element.style.transform = 'scale(1)';
+                            }, 100);
+                            
+                            // Move enemy back slightly
+                            const pushAngle = Math.atan2(enemy.y - buildingCenterY, enemy.x - buildingCenterX);
+                            enemy.x += Math.cos(pushAngle) * 5;
+                            enemy.y += Math.sin(pushAngle) * 5;
+                        }
                     }
                 }
             }
@@ -1542,8 +1542,8 @@
                 projectile.startX += directionX * moveDistance;
                 projectile.startY += directionY * moveDistance;
                 
-                projectile.element.style.left = `${projectile.startX - 4}px`;
-                projectile.element.style.top = `${projectile.startY - 4}px`;
+                projectile.element.style.left = `${projectile.startX - 5}px`;
+                projectile.element.style.top = `${projectile.startY - 5}px`;
                 
                 // Check if reached target or passed it
                 const newDx = projectile.targetX - projectile.startX;
@@ -1566,53 +1566,6 @@
                     // Remove projectile
                     projectile.element.remove();
                     gameState.projectiles.splice(i, 1);
-                }
-            }
-        }
-
-        // Update base projectiles
-        function updateBaseProjectiles() {
-            for (let i = gameState.baseProjectiles.length - 1; i >= 0; i--) {
-                const projectile = gameState.baseProjectiles[i];
-                
-                // Calculate direction
-                const dx = projectile.targetX - projectile.startX;
-                const dy = projectile.targetY - projectile.startY;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                const directionX = dx / distance;
-                const directionY = dy / distance;
-                
-                // Move projectile
-                const elapsed = 1/60; // Assuming 60 FPS
-                const moveDistance = projectile.speed * elapsed;
-                
-                projectile.startX += directionX * moveDistance;
-                projectile.startY += directionY * moveDistance;
-                
-                projectile.element.style.left = `${projectile.startX - 6}px`;
-                projectile.element.style.top = `${projectile.startY - 6}px`;
-                
-                // Check if reached target or passed it
-                const newDx = projectile.targetX - projectile.startX;
-                const newDy = projectile.targetY - projectile.startY;
-                const newDistance = Math.sqrt(newDx * newDx + newDy * newDy);
-                
-                if (newDistance > distance || distance < 5) {
-                    // Apply damage
-                    if (gameState.enemies.includes(projectile.target)) {
-                        projectile.target.hp -= projectile.damage;
-                        projectile.target.healthFill.style.width = `${(projectile.target.hp / projectile.target.maxHP) * 100}%`;
-                        
-                        // Visual feedback
-                        projectile.target.element.style.transform = 'scale(1.1)';
-                        setTimeout(() => {
-                            projectile.target.element.style.transform = 'scale(1)';
-                        }, 100);
-                    }
-                    
-                    // Remove projectile
-                    projectile.element.remove();
-                    gameState.baseProjectiles.splice(i, 1);
                 }
             }
         }
@@ -1652,6 +1605,10 @@
             gameState.gameOver = true;
             elements.finalWaveDisplay.textContent = gameState.wave;
             elements.gameOverScreen.style.display = 'flex';
+            
+            // Play sound
+            gameState.sounds.gameOver.currentTime = 0;
+            gameState.sounds.gameOver.play();
         }
 
         // Event listeners
@@ -1659,13 +1616,11 @@
             // Building selection
             elements.buildOptions.forEach(option => {
                 option.addEventListener('click', () => {
-                    if (!option.classList.contains('disabled')) {
-                        elements.buildOptions.forEach(opt => opt.classList.remove('selected'));
-                        option.classList.add('selected');
-                        
-                        const type = option.dataset.type;
-                        gameState.selectedBuilding = type;
-                    }
+                    elements.buildOptions.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    
+                    const type = option.dataset.type;
+                    gameState.selectedBuilding = type;
                 });
             });
             
@@ -1673,7 +1628,7 @@
             document.addEventListener('keydown', (e) => {
                 if (e.key >= '1' && e.key <= '4') {
                     const index = parseInt(e.key) - 1;
-                    if (index < elements.buildOptions.length && !elements.buildOptions[index].classList.contains('disabled')) {
+                    if (index < elements.buildOptions.length) {
                         elements.buildOptions.forEach(opt => opt.classList.remove('selected'));
                         elements.buildOptions[index].classList.add('selected');
                         gameState.selectedBuilding = elements.buildOptions[index].dataset.type;
@@ -1683,7 +1638,7 @@
             
             // Place building on click
             elements.gameBoard.addEventListener('click', (e) => {
-                if (!gameState.isPreparationPhase || !gameState.selectedBuilding) return;
+                if (!gameState.selectedBuilding) return;
                 
                 const rect = elements.gameBoard.getBoundingClientRect();
                 const x = e.clientX - rect.left;
@@ -1692,18 +1647,15 @@
                 placeBuilding(gameState.selectedBuilding, x, y);
             });
             
-            // Upgrade building
-            elements.upgradeBtn.addEventListener('click', () => {
-                if (currentUpgradeTarget) {
-                    upgradeBuilding(currentUpgradeTarget);
-                }
+            // Base upgrade
+            elements.baseUpgradeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                upgradeBase();
             });
             
-            // Close upgrade menu
-            elements.closeUpgradeMenu.addEventListener('click', hideUpgradeMenu);
-            
-            // Upgrade base
-            elements.upgradeBaseBtn.addEventListener('click', upgradeBase);
+            // Base tooltip
+            elements.base.addEventListener('mouseenter', showBaseTooltip);
+            elements.base.addEventListener('mouseleave', hideTooltip);
             
             // Restart game
             elements.restartBtn.addEventListener('click', initGame);
