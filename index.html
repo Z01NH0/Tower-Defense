@@ -584,11 +584,11 @@
 <body>
     <div id="game-container">
         <div id="header">
-            <div id="game-title">TOWER DEFENSE EVOLVED</div>
+            <div id="game-title">TOWER DEFENSE </div>
             <div id="game-info">
                 <div class="info-box">Wave: <span id="wave-display">1</span></div>
                 <div class="info-box">Diamantes: <span id="money-display">100</span></div>
-                <div class="info-box">Base HP: <span id="base-hp">1000</span>/1000</div>
+                <div class="info-box">Base HP: <span id="base-hp">500</span>/500</div>
                 <div class="info-box">Base Level: <span id="base-level">1</span></div>
             </div>
             <div id="wave-timer">Próxima Wave: <span id="timer-display">30</span>s</div>
@@ -636,19 +636,19 @@
                 <div class="build-icon">🚀</div>
                 <div class="build-name">Lançador</div>
                 <div class="build-cost">Custo: 500</div>
-                <div class="build-limit">Disponível no level 5</div>
+                <div class="build-limit">Disponível no level 10</div>
             </div>
             <div class="build-option disabled" data-type="slow-tower" data-cost="300">
                 <div class="build-icon">❄️</div>
                 <div class="build-name">Torre de Gelo</div>
                 <div class="build-cost">Custo: 300</div>
-                <div class="build-limit">Disponível no level 4</div>
+                <div class="build-limit">Disponível no level 15</div>
             </div>
             <div class="build-option disabled" data-type="barracks" data-cost="1000">
                 <div class="build-icon">🏰</div>
                 <div class="build-name">Quartel</div>
                 <div class="build-cost">Custo: 1000</div>
-                <div class="build-limit">Disponível no level 10</div>
+                <div class="build-limit">Disponível no level 100</div>
             </div>
         </div>
         
@@ -672,10 +672,10 @@
         const gameState = {
             wave: 0,
             money: 100,
-            baseHP: 1000,
-            maxBaseHP: 1000,
+            baseHP: 500,
+            maxBaseHP: 500,
             baseLevel: 1,
-            baseUpgradeCost: 800,
+            baseUpgradeCost: 1800,
             gameOver: false,
             preparationTime: 30,
             isPreparationPhase: true,
@@ -712,9 +712,9 @@
                     cost: 25,
                     hp: 100,
                     baseProduction: 10,
-                    productionMultiplier: 1.7, // Aumentado para 1.7x
-                    upgradeCost: 25,
-                    upgradeCostMultiplier: 1.3,
+                    productionMultiplier: 1.4, 
+                    upgradeCost: 80,
+                    upgradeCostMultiplier: 1.6,
                     color: "#2b7a0b",
                     size: 40,
                     icon: "⛏️"
@@ -723,11 +723,12 @@
                     name: "Canhão",
                     cost: 110,
                     hp: 250,
-                    baseDamage: 15,
-                    damageMultiplier: 1.1,
+                    baseDamage: 20,
+                    damageMultiplier: 1.3,
                     baseAttackSpeed: 1.5,
                     attackSpeedMultiplier: 1.05,
                     range: 200,
+                    rangeMultiplier: 1.4,
                     upgradeCost: 110,
                     upgradeCostMultiplier: 1.3,
                     color: "#7d5a50",
@@ -768,7 +769,7 @@
                     hp: 350,
                     baseDamage: 50,
                     damageMultiplier: 1.25,
-                    baseAttackSpeed: 4,
+                    baseAttackSpeed: 3,
                     attackSpeedMultiplier: 1.03,
                     range: 300,
                     splashRadius: 60,
@@ -781,11 +782,11 @@
                 'slow-tower': {
                     name: "Torre de Gelo",
                     cost: 300,
-                    hp: 200,
-                    slowAmount: 0.5, // 50% slower
+                    hp: 100,
+                    slowAmount: 0.3, 
                     slowRadius: 150,
                     duration: 3,
-                    upgradeCost: 300,
+                    upgradeCost: 600,
                     upgradeCostMultiplier: 1.3,
                     color: "#00b4d8",
                     size: 40,
@@ -795,7 +796,7 @@
                     name: "Quartel",
                     cost: 1000,
                     hp: 1000,
-                    spawnRate: 10, // seconds
+                    spawnRate: 10, 
                     spawnAmount: 1,
                     unitDamage: 5,
                     unitHP: 100,
@@ -809,10 +810,10 @@
             },
             enemyStats: {
                 baseHP: 55,
-                hpMultiplier: 1.5,
-                hpIncreaseWaveInterval: 5,
-                speed: 50,
-                damage: 10,
+                hpMultiplier: 1.6,
+                hpIncreaseWaveInterval: 3,
+                speed: 70,
+                damage: 100,
                 types: [
                     { color: "#ff5555", border: "#cc0000", class: "enemy-type1" },
                     { color: "#ff9966", border: "#cc6600", class: "enemy-type2" },
@@ -866,7 +867,7 @@
             gameState.money = 100;
             gameState.baseHP = gameState.maxBaseHP;
             gameState.baseLevel = 1;
-            gameState.baseUpgradeCost = 800;
+            gameState.baseUpgradeCost = 1800;
             gameState.gameOver = false;
             gameState.isPreparationPhase = true;
             gameState.buildings = [];
@@ -970,7 +971,7 @@
             updateDisplays();
             
             // Spawn enemies (1.1x more each wave)
-            const enemyCount = Math.floor(5 * Math.pow(1.1, gameState.wave));
+            const enemyCount = Math.floor(5 * Math.pow(1.3, gameState.wave));
             spawnEnemies(enemyCount);
         }
 
@@ -1307,13 +1308,13 @@
                 }
                 
                 // Desbloqueios por nível
-                if (gameState.baseLevel >= 4) {
-                    gameState.buildingLimits['slow-tower'].max = 2;
+                if (gameState.baseLevel >= 15) {
+                    gameState.buildingLimits['slow-tower'].max = 1;
                     document.querySelector('.build-option[data-type="slow-tower"]').classList.remove('disabled');
                 }
                 
-                if (gameState.baseLevel >= 5) {
-                    gameState.buildingLimits.missile.max = 1;
+                if (gameState.baseLevel >= 10) {
+                    gameState.buildingLimits.missile.max = 3;
                     document.querySelector('.build-option[data-type="missile"]').classList.remove('disabled');
                 }
                 
@@ -1322,7 +1323,7 @@
                     document.querySelector('.build-option[data-type="laser"]').classList.remove('disabled');
                 }
                 
-                if (gameState.baseLevel >= 10) {
+                if (gameState.baseLevel >= 100) {
                     gameState.buildingLimits.barracks.max = 1;
                     document.querySelector('.build-option[data-type="barracks"]').classList.remove('disabled');
                 }
@@ -1419,7 +1420,7 @@
                 // Show benefits of next level
                 tooltipText += `<p><strong>Benefícios:</strong></p>`;
                 tooltipText += `<ul>`;
-                tooltipText += `<li>+20% HP da base</li>`;
+                tooltipText += `<li>+10% HP da base</li>`;
                 
                 if (nextLevel % 3 === 0) {
                     tooltipText += `<li>+1 Mineradora</li>`;
@@ -1431,11 +1432,11 @@
                     tooltipText += `<li>+1 Torre Laser</li>`;
                 }
                 
-                if (nextLevel === 4) {
+                if (nextLevel === 15) {
                     tooltipText += `<li>Desbloqueia Torre de Gelo</li>`;
                 }
                 
-                if (nextLevel === 5) {
+                if (nextLevel === 10) {
                     tooltipText += `<li>Desbloqueia Lançador de Mísseis</li>`;
                 }
                 
@@ -1443,7 +1444,7 @@
                     tooltipText += `<li>Desbloqueia Torre Laser</li>`;
                 }
                 
-                if (nextLevel === 10) {
+                if (nextLevel === 100) {
                     tooltipText += `<li>Desbloqueia Quartel</li>`;
                 }
                 
