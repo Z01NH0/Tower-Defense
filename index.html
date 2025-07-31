@@ -710,7 +710,7 @@
                 miner: {
                     name: "Mineradora",
                     cost: 25,
-                    hp: 100,
+                    hp: 200,
                     baseProduction: 11,
                     productionMultiplier: 1.4, 
                     upgradeCost: 80,
@@ -722,7 +722,7 @@
                 cannon: {
                     name: "Canhão",
                     cost: 110,
-                    hp: 250,
+                    hp: 300,
                     baseDamage: 25,
                     damageMultiplier: 1.3,
                     baseAttackSpeed: 1.5,
@@ -738,10 +738,10 @@
                 wall: {
                     name: "Muro",
                     cost: 15,
-                    hp: 900,
-                    hpMultiplier: 1.2,
+                    hp: 1000,
+                    hpMultiplier: 1.3,
                     upgradeCost: 15,
-                    upgradeCostMultiplier: 1.3,
+                    upgradeCostMultiplier: 1.4,
                     color: "#555555",
                     size: 40,
                     icon: "🧱"
@@ -750,8 +750,8 @@
                     name: "Torre Laser",
                     cost: 750,
                     hp: 300,
-                    baseDamage: 30,
-                    damageMultiplier: 1.2,
+                    baseDamage: 45,
+                    damageMultiplier: 1.3,
                     baseAttackSpeed: 3,
                     attackSpeedMultiplier: 1.05,
                     range: 250,
@@ -767,9 +767,9 @@
                     name: "Lançador de Mísseis",
                     cost: 500,
                     hp: 350,
-                    baseDamage: 50,
+                    baseDamage: 70,
                     damageMultiplier: 1.25,
-                    baseAttackSpeed: 3,
+                    baseAttackSpeed: 5,
                     attackSpeedMultiplier: 1.03,
                     range: 300,
                     splashRadius: 60,
@@ -1297,9 +1297,9 @@
                 // Update building limits based on base level
                 // A cada 3 níveis: +1 mineradora, +2 canhões, +3 muros
                 if (gameState.baseLevel % 3 === 0) {
-                    gameState.buildingLimits.miner.max += 1;
+                    gameState.buildingLimits.miner.max += 2;
                     gameState.buildingLimits.cannon.max += 2;
-                    gameState.buildingLimits.wall.max += 3;
+                    gameState.buildingLimits.wall.max += 5;
                 }
                 
                 // A partir do level 7, a cada 3 níveis: +1 torre laser
