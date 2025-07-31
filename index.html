@@ -104,8 +104,7 @@
             background-image: 
                 radial-gradient(circle at 1px 1px, rgba(0, 255, 170, 0.1) 1px, transparent 0);
             background-size: 40px 40px;
-            width: 2000px;
-            height: 2000px;
+           
         }
         
         #base {
@@ -2280,10 +2279,7 @@
                 const scrollX = elements.gameBoard.scrollLeft + mouseX;
                 const scrollY = elements.gameBoard.scrollTop + mouseY;
                 
-                // Apply zoom
-                const zoomFactor = 1 + wheelDelta * zoomIntensity;
-                elements.gameBoard.style.width = `${parseInt(elements.gameBoard.style.width || '2000') * zoomFactor}px`;
-                elements.gameBoard.style.height = `${parseInt(elements.gameBoard.style.height || '2000') * zoomFactor}px`;
+               
                 
                 // Adjust scroll position to zoom at mouse position
                 elements.gameBoard.scrollLeft = scrollX * zoomFactor - mouseX;
