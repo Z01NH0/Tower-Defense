@@ -323,6 +323,20 @@
             border: 2px solid #ff66cc;
         }
         
+        .enemy-boss {
+            background: radial-gradient(circle at 30% 30%, #ff0000, #880000);
+            border: 2px solid #ff8800;
+            width: 60px;
+            height: 60px;
+            animation: pulseBoss 1s infinite;
+        }
+        
+        @keyframes pulseBoss {
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 0, 0, 0.8); }
+            50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 136, 0, 0.9); }
+            100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 0, 0, 0.8); }
+        }
+        
         .enemy-health, .ally-health {
             position: absolute;
             top: -12px;
@@ -724,6 +738,7 @@
         <audio id="game-over-sound" class="audio-element" src="https://assets.mixkit.co/sfx/preview/mixkit-retro-arcade-lose-2027.mp3"></audio>
         <audio id="base-upgrade-sound" class="audio-element" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3"></audio>
         <audio id="explosion-sound" class="audio-element" src="https://assets.mixkit.co/sfx/preview/mixkit-explosion-impact-1684.mp3"></audio>
+        <audio id="boss-spawn-sound" class="audio-element" src="https://assets.mixkit.co/sfx/preview/mixkit-epic-impact-afar-1560.mp3"></audio>
     </div>
 
     <script>
@@ -780,7 +795,8 @@
                     upgradeCostMultiplier: 1.6,
                     color: "#2b7a0b",
                     size: 40,
-                    icon: "⛏️"
+                    icon: "⛏️",
+                    maxLevel: 100
                 },
                 cannon: {
                     name: "Canhão",
@@ -796,7 +812,8 @@
                     upgradeCostMultiplier: 1.3,
                     color: "#7d5a50",
                     size: 40,
-                    icon: "💣"
+                    icon: "💣",
+                    maxLevel: 100
                 },
                 wall: {
                     name: "Muro",
@@ -807,7 +824,8 @@
                     upgradeCostMultiplier: 1.4,
                     color: "#555555",
                     size: 40,
-                    icon: "🧱"
+                    icon: "🧱",
+                    maxLevel: 100
                 },
                 laser: {
                     name: "Torre Laser",
@@ -824,7 +842,8 @@
                     upgradeCostMultiplier: 1.3,
                     color: "#3a0ca3",
                     size: 40,
-                    icon: "⚡"
+                    icon: "⚡",
+                    maxLevel: 100
                 },
                 missile: {
                     name: "Lançador de Mísseis",
@@ -841,20 +860,25 @@
                     upgradeCostMultiplier: 1.4,
                     color: "#ff5e00",
                     size: 45,
-                    icon: "🚀"
+                    icon: "🚀",
+                    maxLevel: 100
                 },
                 'slow-tower': {
                     name: "Torre de Gelo",
                     cost: 3000,
                     hp: 100,
-                    slowAmount: 0.3, 
+                    baseSlowAmount: 0.025,
+                    slowAmount: 0.025,
+                    slowAmountPerLevel: 0.025,
+                    maxSlowAmount: 0.5,
                     slowRadius: 150,
                     duration: 3,
-                    upgradeCost: 600,
-                    upgradeCostMultiplier: 1.3,
+                    upgradeCost: 1600,
+                    upgradeCostMultiplier: 2.7,
                     color: "#00b4d8",
                     size: 40,
-                    icon: "❄️"
+                    icon: "❄️",
+                    maxLevel: 20
                 },
                 barracks: {
                     name: "Quartel",
@@ -869,7 +893,8 @@
                     color: "#6a040f",
                     size: 50,
                     icon: "🏰",
-                    lastSpawnTime: 0
+                    lastSpawnTime: 0,
+                    maxLevel: 100
                 }
             },
             enemyStats: {
@@ -879,11 +904,63 @@
                 speed: 70,
                 damage: 80,
                 types: [
-                    { color: "#ff5555", border: "#cc0000", class: "enemy-type1" },
-                    { color: "#ff9966", border: "#cc6600", class: "enemy-type2" },
-                    { color: "#aa55ff", border: "#6600cc", class: "enemy-type3" },
-                    { color: "#00aa88", border: "#008866", class: "enemy-type4" },
-                    { color: "#ff00aa", border: "#cc0088", class: "enemy-type5" }
+                    { 
+                        type: "normal", 
+                        color: "#ff5555", 
+                        border: "#cc0000", 
+                        class: "enemy-type1",
+                        speed: 70,
+                        hpMultiplier: 1,
+                        damage: 80,
+                        spawnChance: 0.5,
+                        projectile: false
+                    },
+                    { 
+                        type: "fast", 
+                        color: "#ff9966", 
+                        border: "#cc6600", 
+                        class: "enemy-type2",
+                        speed: 120,
+                        hpMultiplier: 0.6,
+                        damage: 50,
+                        spawnChance: 0.2,
+                        projectile: false
+                    },
+                    { 
+                        type: "tank", 
+                        color: "#aa55ff", 
+                        border: "#6600cc", 
+                        class: "enemy-type3",
+                        speed: 40,
+                        hpMultiplier: 2.5,
+                        damage: 100,
+                        spawnChance: 0.15,
+                        projectile: false
+                    },
+                    { 
+                        type: "ranged", 
+                        color: "#00aa88", 
+                        border: "#008866", 
+                        class: "enemy-type4",
+                        speed: 60,
+                        hpMultiplier: 0.8,
+                        damage: 100,
+                        spawnChance: 0.1,
+                        projectile: true,
+                        projectileCooldown: 6000,
+                        lastProjectileTime: 0
+                    },
+                    { 
+                        type: "boss", 
+                        color: "#ff00aa", 
+                        border: "#cc0088", 
+                        class: "enemy-boss",
+                        speed: 50,
+                        hpMultiplier: 10,
+                        damage: 200,
+                        spawnChance: 0,
+                        projectile: false
+                    }
                 ]
             },
             sounds: {
@@ -897,7 +974,8 @@
                 enemyDeath: document.getElementById('enemy-death-sound'),
                 gameOver: document.getElementById('game-over-sound'),
                 baseUpgrade: document.getElementById('base-upgrade-sound'),
-                explosion: document.getElementById('explosion-sound')
+                explosion: document.getElementById('explosion-sound'),
+                bossSpawn: document.getElementById('boss-spawn-sound')
             }
         };
 
@@ -925,6 +1003,11 @@
             slowTowerLimit: document.getElementById('slow-tower-limit'),
             barracksLimit: document.getElementById('barracks-limit')
         };
+
+        // Format number with dots for thousands
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
 
         // Game initialization
         function initGame() {
@@ -987,8 +1070,8 @@
         // Update all game displays
         function updateDisplays() {
             elements.waveDisplay.textContent = gameState.wave;
-            elements.moneyDisplay.textContent = gameState.money;
-            elements.baseHpDisplay.textContent = gameState.baseHP;
+            elements.moneyDisplay.textContent = formatNumber(Math.floor(gameState.money));
+            elements.baseHpDisplay.textContent = formatNumber(Math.floor(gameState.baseHP));
             elements.baseLevelDisplay.textContent = gameState.baseLevel;
         }
 
@@ -1042,6 +1125,82 @@
             // Spawn enemies (1.1x more each wave)
             const enemyCount = Math.floor(5 * Math.pow(1.1, gameState.wave));
             spawnEnemies(enemyCount);
+            
+            // Spawn boss every 10 waves
+            if (gameState.wave % 10 === 0) {
+                spawnBoss();
+            }
+        }
+
+        // Spawn boss enemy
+        function spawnBoss() {
+            const boardWidth = elements.gameBoard.clientWidth;
+            const boardHeight = elements.gameBoard.clientHeight;
+            
+            // Calculate boss HP based on wave
+            let bossHP = gameState.enemyStats.baseHP * Math.pow(gameState.enemyStats.hpMultiplier, Math.floor(gameState.wave / gameState.enemyStats.hpIncreaseWaveInterval)) * 10;
+            
+            // Choose a random spawn point
+            const spawnPoint = gameState.enemySpawnPoints[
+                Math.floor(Math.random() * gameState.enemySpawnPoints.length)
+            ];
+            
+            let x, y;
+            if (spawnPoint.x === 0) {
+                x = Math.random() * 100;
+            } else if (spawnPoint.x === 0.5) {
+                x = boardWidth / 2 + (Math.random() * 200 - 100);
+            } else {
+                x = boardWidth - Math.random() * 100;
+            }
+            
+            if (spawnPoint.y === 0) {
+                y = Math.random() * 100;
+            } else if (spawnPoint.y === 0.5) {
+                y = boardHeight / 2 + (Math.random() * 200 - 100);
+            } else {
+                y = boardHeight - Math.random() * 100;
+            }
+            
+            // Boss enemy type
+            const bossType = gameState.enemyStats.types.find(type => type.type === "boss");
+            
+            const boss = document.createElement('div');
+            boss.className = `enemy ${bossType.class}`;
+            boss.style.left = `${x}px`;
+            boss.style.top = `${y}px`;
+            
+            const healthBar = document.createElement('div');
+            healthBar.className = 'enemy-health';
+            
+            const healthFill = document.createElement('div');
+            healthFill.className = 'enemy-health-fill';
+            healthFill.style.width = '100%';
+            
+            healthBar.appendChild(healthFill);
+            boss.appendChild(healthBar);
+            elements.gameBoard.appendChild(boss);
+            
+            gameState.enemies.push({
+                element: boss,
+                x,
+                y,
+                hp: bossHP,
+                maxHP: bossHP,
+                speed: bossType.speed,
+                damage: bossType.damage,
+                healthFill,
+                isStunned: false,
+                stunTimer: 0,
+                isSlowed: false,
+                slowTimer: 0,
+                originalSpeed: bossType.speed,
+                type: "boss"
+            });
+            
+            // Play boss spawn sound
+            gameState.sounds.bossSpawn.currentTime = 0;
+            gameState.sounds.bossSpawn.play();
         }
 
         // Spawn enemies
@@ -1074,12 +1233,25 @@
                     y = boardHeight - Math.random() * 100;
                 }
                 
-                // Random enemy type (more types in later waves)
-                const enemyTypeIndex = Math.min(
-                    Math.floor(Math.random() * (3 + Math.floor(gameState.wave / 5))),
-                    gameState.enemyStats.types.length - 1
-                );
-                const enemyType = gameState.enemyStats.types[enemyTypeIndex];
+                // Choose enemy type based on spawn chances
+                const rand = Math.random();
+                let cumulativeChance = 0;
+                let enemyType = null;
+                
+                for (const type of gameState.enemyStats.types) {
+                    if (type.type === "boss") continue; // Boss is spawned separately
+                    
+                    cumulativeChance += type.spawnChance;
+                    if (rand <= cumulativeChance) {
+                        enemyType = type;
+                        break;
+                    }
+                }
+                
+                // Fallback to normal enemy if no type was selected
+                if (!enemyType) {
+                    enemyType = gameState.enemyStats.types[0];
+                }
                 
                 const enemy = document.createElement('div');
                 enemy.className = `enemy ${enemyType.class}`;
@@ -1101,16 +1273,20 @@
                     element: enemy,
                     x,
                     y,
-                    hp: enemyHP,
-                    maxHP: enemyHP,
-                    speed: gameState.enemyStats.speed,
-                    damage: gameState.enemyStats.damage,
+                    hp: enemyHP * enemyType.hpMultiplier,
+                    maxHP: enemyHP * enemyType.hpMultiplier,
+                    speed: enemyType.speed,
+                    damage: enemyType.damage,
                     healthFill,
                     isStunned: false,
                     stunTimer: 0,
                     isSlowed: false,
                     slowTimer: 0,
-                    originalSpeed: gameState.enemyStats.speed
+                    originalSpeed: enemyType.speed,
+                    type: enemyType.type,
+                    projectile: enemyType.projectile,
+                    projectileCooldown: enemyType.projectileCooldown,
+                    lastProjectileTime: 0
                 });
             }
         }
@@ -1221,6 +1397,7 @@
                 maxHP: stats.hp,
                 healthFill,
                 lastAttackTime: 0,
+                maxLevel: stats.maxLevel,
                 // Type-specific properties
                 ...(type === 'miner' ? {
                     lastProductionTime: 0,
@@ -1287,6 +1464,11 @@
 
         // Upgrade building
         function upgradeBuilding(building) {
+            // Check if building can be upgraded further
+            if (building.level >= building.maxLevel) {
+                return;
+            }
+            
             // Check if building can be upgraded further (based on base level)
             if (building.level >= gameState.baseLevel) {
                 return;
@@ -1321,15 +1503,24 @@
                     case 'missile':
                         building.damage *= stats.damageMultiplier;
                         building.attackSpeed /= stats.attackSpeedMultiplier;
+                        // Increase missile limit every 3 levels
+                        if (building.level % 3 === 0) {
+                            gameState.buildingLimits.missile.max++;
+                            updateBuildingLimitsDisplay();
+                        }
                         break;
                     case 'slow-tower':
-                        building.slowAmount *= 1.1;
-                        building.slowRadius *= 1.1;
+                        // Increase slow amount up to max
+                        building.slowAmount = Math.min(
+                            stats.baseSlowAmount + (building.level - 1) * stats.slowAmountPerLevel,
+                            stats.maxSlowAmount
+                        );
+                        building.slowRadius *= 1.05;
                         break;
                     case 'barracks':
                         building.spawnAmount += 1;
-                        building.unitDamage *= 1.5; // Aumenta o dano em 1.5x
-                        building.unitHP *= 1.2; // Aumenta o HP em 1.2x
+                        building.unitDamage *= 1.5;
+                        building.unitHP *= 1.2;
                         break;
                 }
                 
@@ -1355,7 +1546,7 @@
 
         // Upgrade base
         function upgradeBase() {
-            if (gameState.money >= gameState.baseUpgradeCost) {
+            if (gameState.money >= gameState.baseUpgradeCost && gameState.baseLevel < 100) {
                 gameState.money -= gameState.baseUpgradeCost;
                 gameState.baseLevel++;
                 gameState.baseUpgradeCost = Math.floor(gameState.baseUpgradeCost * 1.5);
@@ -1412,13 +1603,15 @@
             const stats = gameState.buildingStats[building.type];
             const upgradeCost = Math.floor(stats.upgradeCost * Math.pow(stats.upgradeCostMultiplier, building.level - 1));
             
-            let tooltipText = `<h3>${stats.name} (Nível ${building.level})</h3>`;
-            tooltipText += `<p><strong>HP:</strong> ${Math.floor(building.hp)}/${Math.floor(building.maxHP)}</p>`;
+            let tooltipText = `<h3>${stats.name} (Nível ${building.level}${building.level >= building.maxLevel ? ' - Nível Máximo' : ''})</h3>`;
+            tooltipText += `<p><strong>HP:</strong> ${formatNumber(Math.floor(building.hp))}/${formatNumber(Math.floor(building.maxHP))}</p>`;
             
-            if (building.level < gameState.baseLevel) {
-                tooltipText += `<p><strong>Upgrade:</strong> ${upgradeCost} diamantes (Nível ${building.level + 1})</p>`;
-            } else {
-                tooltipText += `<p><strong>Upgrade:</strong> Melhore sua base para nível ${gameState.baseLevel + 1} primeiro</p>`;
+            if (building.level < building.maxLevel) {
+                if (building.level < gameState.baseLevel) {
+                    tooltipText += `<p><strong>Upgrade:</strong> ${formatNumber(upgradeCost)} diamantes (Nível ${building.level + 1})</p>`;
+                } else {
+                    tooltipText += `<p><strong>Upgrade:</strong> Melhore sua base para nível ${gameState.baseLevel + 1} primeiro</p>`;
+                }
             }
             
             switch (building.type) {
@@ -1431,7 +1624,7 @@
                     tooltipText += `<p><strong>Alcance:</strong> ${building.range}px</p>`;
                     break;
                 case 'wall':
-                    tooltipText += `<p><strong>Defesa:</strong> ${building.maxHP.toFixed(0)} HP</p>`;
+                    tooltipText += `<p><strong>Defesa:</strong> ${formatNumber(Math.floor(building.maxHP))} HP</p>`;
                     break;
                 case 'laser':
                     tooltipText += `<p><strong>Dano:</strong> ${building.damage.toFixed(1)}</p>`;
@@ -1448,7 +1641,7 @@
                     tooltipText += `<p><strong>Raio de explosão:</strong> ${building.splashRadius}px</p>`;
                     break;
                 case 'slow-tower':
-                    tooltipText += `<p><strong>Redução de velocidade:</strong> ${(building.slowAmount * 100).toFixed(0)}%</p>`;
+                    tooltipText += `<p><strong>Redução de velocidade:</strong> ${(building.slowAmount * 100).toFixed(1)}%</p>`;
                     tooltipText += `<p><strong>Raio de efeito:</strong> ${building.slowRadius.toFixed(0)}px</p>`;
                     tooltipText += `<p><strong>Duração:</strong> ${building.duration}s</p>`;
                     break;
@@ -1460,7 +1653,9 @@
                     break;
             }
             
-            tooltipText += `<p><em>Clique para melhorar</em></p>`;
+            if (building.level < building.maxLevel) {
+                tooltipText += `<p><em>Clique para melhorar</em></p>`;
+            }
             
             elements.tooltip.innerHTML = tooltipText;
             elements.tooltip.style.display = 'block';
@@ -1476,21 +1671,21 @@
             const upgradeCost = gameState.baseUpgradeCost;
             const nextLevel = gameState.baseLevel + 1;
             
-            let tooltipText = `<h3>Núcleo (Nível ${gameState.baseLevel})</h3>`;
-            tooltipText += `<p><strong>HP:</strong> ${gameState.baseHP}/${gameState.maxBaseHP}</p>`;
+            let tooltipText = `<h3>Núcleo (Nível ${gameState.baseLevel}${gameState.baseLevel >= 100 ? ' - Nível Máximo' : ''})</h3>`;
+            tooltipText += `<p><strong>HP:</strong> ${formatNumber(Math.floor(gameState.baseHP))}/${formatNumber(Math.floor(gameState.maxBaseHP))}</p>`;
             
             if (gameState.baseLevel < 100) {
-                tooltipText += `<p><strong>Upgrade para nível ${nextLevel}:</strong> ${upgradeCost} diamantes</p>`;
+                tooltipText += `<p><strong>Upgrade para nível ${nextLevel}:</strong> ${formatNumber(upgradeCost)} diamantes</p>`;
                 
                 // Show benefits of next level
                 tooltipText += `<p><strong>Benefícios:</strong></p>`;
                 tooltipText += `<ul>`;
-                tooltipText += `<li>+10% HP do Núcleo</li>`;
+                tooltipText += `<li>+20% HP do Núcleo</li>`;
                 
                 if (nextLevel % 3 === 0) {
-                    tooltipText += `<li>+1 Mineradora</li>`;
+                    tooltipText += `<li>+2 Mineradoras</li>`;
                     tooltipText += `<li>+2 Canhões</li>`;
-                    tooltipText += `<li>+3 Muros</li>`;
+                    tooltipText += `<li>+5 Muros</li>`;
                 }
                 
                 if (nextLevel >= 7 && nextLevel % 3 === 1) {
@@ -1744,6 +1939,19 @@
                         duration: 300 // milliseconds
                     });
                     
+                    // Create electric beam effect
+                    const electricBeam = document.createElement('div');
+                    electricBeam.className = 'electric-beam';
+                    elements.gameBoard.appendChild(electricBeam);
+                    
+                    gameState.electricBeams.push({
+                        element: electricBeam,
+                        source: building,
+                        targets,
+                        startTime: timestamp,
+                        duration: 300
+                    });
+                    
                     // Play sound
                     gameState.sounds.laser.currentTime = 0;
                     gameState.sounds.laser.play();
@@ -1805,8 +2013,14 @@
                     missile.style.top = `${building.y + building.element.clientHeight / 2 - 7.5}px`;
                     elements.gameBoard.appendChild(missile);
                     
+                    // Create missile trail
+                    const missileTrail = document.createElement('div');
+                    missileTrail.className = 'missile-trail';
+                    elements.gameBoard.appendChild(missileTrail);
+                    
                     gameState.missileProjectiles.push({
                         element: missile,
+                        trail: missileTrail,
                         startX: building.x + building.element.clientWidth / 2,
                         startY: building.y + building.element.clientHeight / 2,
                         targetX: targetEnemy.x + targetEnemy.element.clientWidth / 2,
@@ -1815,7 +2029,8 @@
                         damage: building.damage,
                         splashRadius: building.splashRadius,
                         splashDamage: building.splashDamage,
-                        target: targetEnemy
+                        target: targetEnemy,
+                        startTime: timestamp
                     });
                     
                     // Play sound
@@ -1967,6 +2182,33 @@
                     }
                 }
                 
+                // Ranged enemy attack
+                if (enemy.projectile && timestamp - enemy.lastProjectileTime > enemy.projectileCooldown) {
+                    enemy.lastProjectileTime = timestamp;
+                    
+                    // Create projectile
+                    const projectile = document.createElement('div');
+                    projectile.className = 'projectile';
+                    projectile.style.left = `${enemy.x + enemy.element.clientWidth / 2 - 5}px`;
+                    projectile.style.top = `${enemy.y + enemy.element.clientHeight / 2 - 5}px`;
+                    elements.gameBoard.appendChild(projectile);
+                    
+                    gameState.projectiles.push({
+                        element: projectile,
+                        startX: enemy.x + enemy.element.clientWidth / 2,
+                        startY: enemy.y + enemy.element.clientHeight / 2,
+                        targetX: baseX,
+                        targetY: baseY,
+                        speed: 300,
+                        damage: 100,
+                        isEnemyProjectile: true
+                    });
+                    
+                    // Play sound
+                    gameState.sounds.attack.currentTime = 0;
+                    gameState.sounds.attack.play();
+                }
+                
                 // Move toward base
                 const angle = Math.atan2(baseY - enemy.y, baseX - enemy.x);
                 const speed = enemy.speed / 60; // Assuming 60 FPS
@@ -2042,7 +2284,7 @@
                 if (distanceToBase < 40) {
                     // Damage base
                     gameState.baseHP -= enemy.damage;
-                    elements.baseHpDisplay.textContent = gameState.baseHP;
+                    elements.baseHpDisplay.textContent = formatNumber(Math.floor(gameState.baseHP));
                     
                     // Visual feedback
                     elements.base.style.transform = 'translate(-50%, -50%) scale(1.1)';
@@ -2145,15 +2387,33 @@
                 
                 if (newDistance > distance || distance < 5) {
                     // Apply damage
-                    if (gameState.enemies.includes(projectile.target)) {
-                        projectile.target.hp -= projectile.damage;
-                        projectile.target.healthFill.style.width = `${(projectile.target.hp / projectile.target.maxHP) * 100}%`;
+                    if (projectile.isEnemyProjectile) {
+                        // Enemy projectile hits base
+                        gameState.baseHP -= projectile.damage;
+                        elements.baseHpDisplay.textContent = formatNumber(Math.floor(gameState.baseHP));
                         
                         // Visual feedback
-                        projectile.target.element.style.transform = 'scale(1.1)';
+                        elements.base.style.transform = 'translate(-50%, -50%) scale(1.1)';
                         setTimeout(() => {
-                            projectile.target.element.style.transform = 'scale(1)';
+                            elements.base.style.transform = 'translate(-50%, -50%) scale(1)';
                         }, 100);
+                        
+                        // Check if base is destroyed
+                        if (gameState.baseHP <= 0) {
+                            gameOver();
+                        }
+                    } else {
+                        // Player projectile hits enemy
+                        if (gameState.enemies.includes(projectile.target)) {
+                            projectile.target.hp -= projectile.damage;
+                            projectile.target.healthFill.style.width = `${(projectile.target.hp / projectile.target.maxHP) * 100}%`;
+                            
+                            // Visual feedback
+                            projectile.target.element.style.transform = 'scale(1.1)';
+                            setTimeout(() => {
+                                projectile.target.element.style.transform = 'scale(1)';
+                            }, 100);
+                        }
                     }
                     
                     // Remove projectile
@@ -2184,6 +2444,67 @@
                 
                 missile.element.style.left = `${missile.startX - 7.5}px`;
                 missile.element.style.top = `${missile.startY - 7.5}px`;
+                
+                // Check collision with enemies
+                for (const enemy of gameState.enemies) {
+                    const enemyCenterX = enemy.x + enemy.element.clientWidth / 2;
+                    const enemyCenterY = enemy.y + enemy.element.clientHeight / 2;
+                    
+                    const enemyDistance = Math.sqrt(
+                        Math.pow(missile.startX - enemyCenterX, 2) +
+                        Math.pow(missile.startY - enemyCenterY, 2)
+                    );
+                    
+                    // Collision with enemy
+                    if (enemyDistance < 20) {
+                        // Create explosion
+                        const explosion = document.createElement('div');
+                        explosion.className = 'explosion';
+                        explosion.style.left = `${missile.startX - missile.splashRadius}px`;
+                        explosion.style.top = `${missile.startY - missile.splashRadius}px`;
+                        explosion.style.width = `${missile.splashRadius * 2}px`;
+                        explosion.style.height = `${missile.splashRadius * 2}px`;
+                        elements.gameBoard.appendChild(explosion);
+                        
+                        gameState.explosions.push({
+                            element: explosion,
+                            x: missile.startX,
+                            y: missile.startY,
+                            radius: missile.splashRadius,
+                            damage: missile.splashDamage,
+                            startTime: performance.now()
+                        });
+                        
+                        // Play sound
+                        gameState.sounds.explosion.currentTime = 0;
+                        gameState.sounds.explosion.play();
+                        
+                        // Apply splash damage
+                        for (const enemy of gameState.enemies) {
+                            const enemyDistance = Math.sqrt(
+                                Math.pow(missile.startX - (enemy.x + enemy.element.clientWidth / 2), 2) +
+                                Math.pow(missile.startY - (enemy.y + enemy.element.clientHeight / 2), 2)
+                            );
+                            
+                            if (enemyDistance < missile.splashRadius) {
+                                enemy.hp -= missile.splashDamage;
+                                enemy.healthFill.style.width = `${(enemy.hp / enemy.maxHP) * 100}%`;
+                                
+                                // Visual feedback
+                                enemy.element.style.transform = 'scale(1.1)';
+                                setTimeout(() => {
+                                    enemy.element.style.transform = 'scale(1)';
+                                }, 100);
+                            }
+                        }
+                        
+                        // Remove missile
+                        missile.element.remove();
+                        missile.trail.remove();
+                        gameState.missileProjectiles.splice(i, 1);
+                        return; // Exit after first collision
+                    }
+                }
                 
                 // Check if reached target or passed it
                 const newDx = missile.targetX - missile.startX;
@@ -2234,6 +2555,7 @@
                     
                     // Remove missile
                     missile.element.remove();
+                    missile.trail.remove();
                     gameState.missileProjectiles.splice(i, 1);
                 }
             }
