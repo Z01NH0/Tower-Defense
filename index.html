@@ -707,7 +707,7 @@
             <div class="build-option disabled" data-type="missile" data-cost="500">
                 <div class="build-icon">🚀</div>
                 <div class="build-name">Fusor de Plasma</div>
-                <div class="build-cost">Custo: 1.500</div>
+                <div class="build-cost">Custo: 5.000</div>
                 <div class="build-limit">Disponível no level 10</div>
             </div>
             <div class="build-option disabled" data-type="slow-tower" data-cost="300">
@@ -845,19 +845,20 @@
                     icon: "⚡",
                     maxLevel: 100
                 },
-                missile: {
+               missile: {
                     name: "Lançador de Mísseis",
-                    cost: 1500,
+                    cost: 5000,
                     hp: 350,
                     baseDamage: 70,
                     damageMultiplier: 1.4,
-                    baseAttackSpeed: 5,
-                    attackSpeedMultiplier: 1.03,
-                    range: 300,
-                    splashRadius: 60,
-                    splashDamage: 20,
+                    baseAttackSpeed: 15,
+                    attackSpeedMultiplier: 1.01,
+                    range: 600,
+                    splashRadius: 190,
+                    baseSplashDamage: 120, 
+                    splashDamageMultiplier: 1.7,  
                     upgradeCost: 500,
-                    upgradeCostMultiplier: 1.4,
+                    upgradeCostMultiplier: 2.1,
                     color: "#ff5e00",
                     size: 45,
                     icon: "🚀",
@@ -1034,7 +1035,7 @@
             gameState.buildingLimits = {
                 miner: { current: 0, max: 3 },
                 cannon: { current: 0, max: 3 },
-                wall: { current: 0, max: 5 },
+                wall: { current: 0, max: 6 },
                 laser: { current: 0, max: 0 },
                 missile: { current: 0, max: 0 },
                 'slow-tower': { current: 0, max: 0 },
@@ -1422,7 +1423,7 @@
                     attackSpeed: stats.baseAttackSpeed,
                     range: stats.range,
                     splashRadius: stats.splashRadius,
-                    splashDamage: stats.splashDamage
+                    splashDamage: stats.baseSplashDamage
                 } : {}),
                 ...(type === 'slow-tower' ? {
                     slowAmount: stats.slowAmount,
@@ -1502,8 +1503,8 @@
                         break;
                     case 'missile':
                         building.damage *= stats.damageMultiplier;
+                        building.splashDamage *= stats.splashDamageMultiplier;  
                         building.attackSpeed /= stats.attackSpeedMultiplier;
-                        // Increase missile limit every 3 levels
                         if (building.level % 3 === 0) {
                             gameState.buildingLimits.missile.max++;
                             updateBuildingLimitsDisplay();
