@@ -645,22 +645,22 @@
             <div id="game-title">TOWER DEFENSE </div>
             <div id="game-info">
                 <div class="info-box">Wave: <span id="wave-display">1</span></div>
-                <div class="info-box">Diamantes: <span id="money-display">100</span></div>
-                <div class="info-box">Base HP: <span id="base-hp">700</span>/700</div>
-                <div class="info-box">Base Level: <span id="base-level">1</span></div>
+                <div class="info-box">Dinheiro: <span id="money-display">100</span></div>
+                <div class="info-box">Núcleo HP: <span id="base-hp">700</span>/700</div>
+                <div class="info-box">Núcleo Level: <span id="base-level">1</span></div>
             </div>
             <div id="wave-timer">Próxima Wave: <span id="timer-display">30</span>s</div>
         </div>
         
         <div id="game-board">
             <div id="base">
-                BASE
+                Núcleo
                 <button id="base-upgrade">Upgrade</button>
             </div>
             
             <div id="game-over">
                 <h1>GAME OVER</h1>
-                <p>Sua base foi destruída na wave <span id="final-wave">1</span></p>
+                <p>Seu Núcleo foi destruída na wave <span id="final-wave">1</span></p>
                 <button id="restart-btn">Reiniciar</button>
             </div>
         </div>
@@ -674,7 +674,7 @@
             </div>
             <div class="build-option" data-type="cannon" data-cost="110">
                 <div class="build-icon">💣</div>
-                <div class="build-name">Canhão</div>
+                <div class="build-name">Canhão </div>
                 <div class="build-cost">Custo: 110</div>
                 <div class="build-limit">Limite: <span id="cannon-limit">2/2</span></div>
             </div>
@@ -692,7 +692,7 @@
             </div>
             <div class="build-option disabled" data-type="missile" data-cost="500">
                 <div class="build-icon">🚀</div>
-                <div class="build-name">Lançador</div>
+                <div class="build-name">Fusor de Plasma</div>
                 <div class="build-cost">Custo: 1.500</div>
                 <div class="build-limit">Disponível no level 10</div>
             </div>
@@ -828,7 +828,7 @@
                 },
                 missile: {
                     name: "Lançador de Mísseis",
-                    cost: 500,
+                    cost: 1500,
                     hp: 350,
                     baseDamage: 70,
                     damageMultiplier: 1.4,
@@ -845,7 +845,7 @@
                 },
                 'slow-tower': {
                     name: "Torre de Gelo",
-                    cost: 300,
+                    cost: 3000,
                     hp: 100,
                     slowAmount: 0.3, 
                     slowRadius: 150,
@@ -858,13 +858,13 @@
                 },
                 barracks: {
                     name: "Quartel",
-                    cost: 1000,
+                    cost: 10000,
                     hp: 1000,
-                    spawnRate: 10, 
+                    spawnRate: 25, 
                     spawnAmount: 1,
                     unitDamage: 30,
                     unitHP: 100,
-                    upgradeCost: 1000,
+                    upgradeCost: 5000,
                     upgradeCostMultiplier: 2.6,
                     color: "#6a040f",
                     size: 50,
@@ -1476,7 +1476,7 @@
             const upgradeCost = gameState.baseUpgradeCost;
             const nextLevel = gameState.baseLevel + 1;
             
-            let tooltipText = `<h3>Base (Nível ${gameState.baseLevel})</h3>`;
+            let tooltipText = `<h3>Núcleo (Nível ${gameState.baseLevel})</h3>`;
             tooltipText += `<p><strong>HP:</strong> ${gameState.baseHP}/${gameState.maxBaseHP}</p>`;
             
             if (gameState.baseLevel < 100) {
@@ -1485,7 +1485,7 @@
                 // Show benefits of next level
                 tooltipText += `<p><strong>Benefícios:</strong></p>`;
                 tooltipText += `<ul>`;
-                tooltipText += `<li>+10% HP da base</li>`;
+                tooltipText += `<li>+10% HP do Núcleo</li>`;
                 
                 if (nextLevel % 3 === 0) {
                     tooltipText += `<li>+1 Mineradora</li>`;
