@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tower Defense Evolved</title>
+    <title>Tower Defense</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         
@@ -2721,108 +2721,87 @@
 
         // Event listeners
         function setupEventListeners() {
-            // Building selection
-            elements.buildOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    elements.buildOptions.forEach(opt => opt.classList.remove('selected'));
-                    option.classList.add('selected');
-                    
-                    const type = option.dataset.type;
-                    gameState.selectedBuilding = type;
-                });
-            });
+    // Building selection
+    elements.buildOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            elements.buildOptions.forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
             
-            // Keyboard shortcuts for building selection
-            document.addEventListener('keydown', (e) => {
-                if (e.key >= '1' && e.key <= '7') {
-                    const index = parseInt(e.key) - 1;
-                    if (index < elements.buildOptions.length) {
-                        elements.buildOptions.forEach(opt => opt.classList.remove('selected'));
-                        elements.buildOptions[index].classList.add('selected');
-                        gameState.selectedBuilding = elements.buildOptions[index].dataset.type;
-                    }
-                }
-            });
-            
-            // Place building on click
-            elements.gameBoard.addEventListener('click', (e) => {
-                if (!gameState.selectedBuilding) return;
-                
-                const rect = elements.gameBoard.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                placeBuilding(gameState.selectedBuilding, x, y);
-            });
-            
-            // Base upgrade
-            elements.baseUpgradeBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                upgradeBase();
-            });
-            
-            // Base tooltip
-            elements.base.addEventListener('mouseenter', showBaseTooltip);
-            elements.base.addEventListener('mouseleave', hideTooltip);
-            
-            // Restart game
-            elements.restartBtn.addEventListener('click', initGame);
-            
-            // Pan the game board with mouse drag
-            let isDragging = false;
-            let lastX = 0;
-            let lastY = 0;
-            
-            elements.gameBoard.addEventListener('mousedown', (e) => {
-                if (e.button === 1 || (e.button === 0 && e.ctrlKey)) { // Middle click or Ctrl+Left click
-                    isDragging = true;
-                    lastX = e.clientX;
-                    lastY = e.clientY;
-                    e.preventDefault();
-                }
-            });
-            
-            document.addEventListener('mousemove', (e) => {
-                if (isDragging) {
-                    const dx = e.clientX - lastX;
-                    const dy = e.clientY - lastY;
-                    
-                    elements.gameBoard.scrollLeft -= dx;
-                    elements.gameBoard.scrollTop -= dy;
-                    
-                    lastX = e.clientX;
-                    lastY = e.clientY;
-                }
-            });
-            
-            document.addEventListener('mouseup', () => {
-                isDragging = false;
-            });
-            
-            // Zoom with mouse wheel
-            elements.gameBoard.addEventListener('wheel', (e) => {
-                e.preventDefault();
-                const zoomIntensity = 0.1;
-                const wheelDelta = e.deltaY < 0 ? 1 : -1;
-                
-                // Get mouse position relative to game board
-                const rect = elements.gameBoard.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-                
-                // Calculate scroll position before zoom
-                const scrollX = elements.gameBoard.scrollLeft + mouseX;
-                const scrollY = elements.gameBoard.scrollTop + mouseY;
-                
-                // Apply zoom
-                const zoomFactor = 1 + wheelDelta * zoomIntensity;
-                elements.gameBoard.style.transform = `scale(${zoomFactor})`;
-                
-                // Adjust scroll position to zoom at mouse position
-                elements.gameBoard.scrollLeft = scrollX * zoomFactor - mouseX;
-                elements.gameBoard.scrollTop = scrollY * zoomFactor - mouseY;
-            });
+            const type = option.dataset.type;
+            gameState.selectedBuilding = type;
+        });
+    });
+    
+    // Keyboard shortcuts for building selection
+    document.addEventListener('keydown', (e) => {
+        if (e.key >= '1' && e.key <= '7') {
+            const index = parseInt(e.key) - 1;
+            if (index < elements.buildOptions.length) {
+                elements.buildOptions.forEach(opt => opt.classList.remove('selected'));
+                elements.buildOptions[index].classList.add('selected');
+                gameState.selectedBuilding = elements.buildOptions[index].dataset.type;
+            }
         }
+    });
+    
+    // Place building on click
+    elements.gameBoard.addEventListener('click', (e) => {
+        if (!gameState.selectedBuilding) return;
+        
+        const rect = elements.gameBoard.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        placeBuilding(gameState.selectedBuilding, x, y);
+    });
+    
+    // Base upgrade
+    elements.baseUpgradeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        upgradeBase();
+    });
+    
+    // Base tooltip
+    elements.base.addEventListener('mouseenter', showBaseTooltip);
+    elements.base.addEventListener('mouseleave', hideTooltip);
+    
+    // Restart game
+    elements.restartBtn.addEventListener('click', initGame);
+    
+    // Pan the game board with mouse drag
+    let isDragging = false;
+    let lastX = 0;
+    let lastY = 0;
+    
+    elements.gameBoard.addEventListener('mousedown', (e) => {
+        if (e.button === 1 || (e.button === 0 && e.ctrlKey)) {
+            isDragging = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            e.preventDefault();
+        }
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            const dx = e.clientX - lastX;
+            const dy = e.clientY - lastY;
+            
+            elements.gameBoard.scrollLeft -= dx;
+            elements.gameBoard.scrollTop -= dy;
+            
+            lastX = e.clientX;
+            lastY = e.clientY;
+        }
+    });
+    
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    // Reset zoom if already applied
+    elements.gameBoard.style.transform = 'scale(1)';
+}
 
         // Initialize game
         setupEventListeners();
