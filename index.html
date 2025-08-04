@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tower Defense</title>
+    <title>Tower Defense Evolved</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         
@@ -821,7 +821,7 @@
                     hp: 1000,
                     hpMultiplier: 1.3,
                     upgradeCost: 15,
-                    upgradeCostMultiplier: 1.4,
+                    upgradeCostMultiplier: 2.2,
                     color: "#555555",
                     size: 40,
                     icon: "🧱",
@@ -846,7 +846,7 @@
                     maxLevel: 100
                 },
                missile: {
-                    name: "Lançador de Mísseis",
+                    name: "Fusor de Plasma",
                     cost: 5000,
                     hp: 350,
                     baseDamage: 70,
@@ -921,7 +921,7 @@
                         color: "#ff9966", 
                         border: "#cc6600", 
                         class: "enemy-type2",
-                        speed: 120,
+                        speed: 140,
                         hpMultiplier: 0.6,
                         damage: 50,
                         spawnChance: 0.2,
@@ -932,9 +932,9 @@
                         color: "#aa55ff", 
                         border: "#6600cc", 
                         class: "enemy-type3",
-                        speed: 40,
+                        speed: 45,
                         hpMultiplier: 2.5,
-                        damage: 100,
+                        damage: 150,
                         spawnChance: 0.15,
                         projectile: false
                     },
@@ -943,12 +943,12 @@
                         color: "#00aa88", 
                         border: "#008866", 
                         class: "enemy-type4",
-                        speed: 60,
+                        speed: 70,
                         hpMultiplier: 0.8,
-                        damage: 100,
+                        damage: 50,
                         spawnChance: 0.1,
                         projectile: true,
-                        projectileCooldown: 6000,
+                        projectileCooldown: 10000,
                         lastProjectileTime: 0
                     },
                     { 
@@ -956,9 +956,9 @@
                         color: "#ff00aa", 
                         border: "#cc0088", 
                         class: "enemy-boss",
-                        speed: 50,
+                        speed: 70,
                         hpMultiplier: 10,
-                        damage: 200,
+                        damage: 500,
                         spawnChance: 0,
                         projectile: false
                     }
@@ -1559,7 +1559,7 @@
                 // Update building limits based on base level
                 if (gameState.baseLevel % 3 === 0) {
                     gameState.buildingLimits.miner.max += 2;
-                    gameState.buildingLimits.cannon.max += 2;
+                    gameState.buildingLimits.cannon.max += 1;
                     gameState.buildingLimits.wall.max += 5;
                 }
                 
@@ -1570,7 +1570,7 @@
                 }
                 
                 if (gameState.baseLevel >= 10) {
-                    gameState.buildingLimits.missile.max = 3;
+                    gameState.buildingLimits.missile.max = 1;
                     document.querySelector('.build-option[data-type="missile"]').classList.remove('disabled');
                 }
                 
@@ -1639,7 +1639,7 @@
                     tooltipText += `<p><strong>Dano em área:</strong> ${building.splashDamage}</p>`;
                     tooltipText += `<p><strong>Velocidade:</strong> ${(1 / building.attackSpeed).toFixed(1)} ataques/s</p>`;
                     tooltipText += `<p><strong>Alcance:</strong> ${building.range}px</p>`;
-                    tooltipText += `<p><strong>Raio de explosão:</strong> ${building.splashRadius}px</p>`;
+                    
                     break;
                 case 'slow-tower':
                     tooltipText += `<p><strong>Redução de velocidade:</strong> ${(building.slowAmount * 100).toFixed(1)}%</p>`;
@@ -1685,7 +1685,7 @@
                 
                 if (nextLevel % 3 === 0) {
                     tooltipText += `<li>+2 Mineradoras</li>`;
-                    tooltipText += `<li>+2 Canhões</li>`;
+                    tooltipText += `<li>+1 Canhões</li>`;
                     tooltipText += `<li>+5 Muros</li>`;
                 }
                 
@@ -1698,7 +1698,7 @@
                 }
                 
                 if (nextLevel === 10) {
-                    tooltipText += `<li>Desbloqueia Lançador de Mísseis</li>`;
+                    tooltipText += `<li>Desbloqueia Fusor de Plasma</li>`;
                 }
                 
                 if (nextLevel === 7) {
@@ -2142,7 +2142,7 @@
                 // Check if enemy is dead
                 if (enemy.hp <= 0) {
                     // Chance to drop mineral
-                    if (Math.random() < 0.3) {
+                    if (Math.random() < 0.0) {
                         const mineral = document.createElement('div');
                         mineral.className = 'mineral';
                         mineral.style.left = `${enemy.x}px`;
@@ -2201,7 +2201,7 @@
                         targetX: baseX,
                         targetY: baseY,
                         speed: 300,
-                        damage: 100,
+                        damage: 50,
                         isEnemyProjectile: true
                     });
                     
