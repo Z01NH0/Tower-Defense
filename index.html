@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tower Defense Evolved</title>
+    <title>Tower Defense </title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         
@@ -946,9 +946,9 @@
                         speed: 70,
                         hpMultiplier: 0.8,
                         damage: 50,
-                        spawnChance: 0.01,
+                        spawnChance: 0.1,
                         projectile: true,
-                        projectileCooldown: 15000,
+                        projectileCooldown: 10000,
                         lastProjectileTime: 0
                     },
                     { 
@@ -1635,8 +1635,7 @@
                     tooltipText += `<p><strong>Alvos:</strong> ${building.chainTargets}</p>`;
                     break;
                 case 'missile':
-                    tooltipText += `<p><strong>Dano:</strong> ${building.damage.toFixed(1)}</p>`;
-                    tooltipText += `<p><strong>Dano em área:</strong> ${building.splashDamage}</p>`;
+                    tooltipText += `<p><strong>Dano:</strong> ${building.splashDamage}</p>`;
                     tooltipText += `<p><strong>Velocidade:</strong> ${(1 / building.attackSpeed).toFixed(1)} ataques/s</p>`;
                     tooltipText += `<p><strong>Alcance:</strong> ${building.range}px</p>`;
                     
