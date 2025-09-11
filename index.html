@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tower Defense </title>
+    <title>Tower Defense Evolved</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&display=swap');
         
         :root {
             --primary-color: #00ffaa;
@@ -16,6 +16,19 @@
             --warning-color: #ffcc00;
             --success-color: #00cc66;
             --ally-color: #1a3a8f;
+            --miner-color: #2b7a0b;
+            --cannon-color: #7d5a50;
+            --wall-color: #555555;
+            --laser-color: #3a0ca3;
+            --missile-color: #ff5e00;
+            --slow-color: #00b4d8;
+            --barracks-color: #6a040f;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
         
         body {
@@ -32,49 +45,63 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
+            position: relative;
         }
         
+        /* Header Styles */
         #header {
-            background-color: rgba(10, 25, 47, 0.9);
-            padding: 15px;
+            background: linear-gradient(180deg, rgba(10, 25, 47, 0.95) 0%, rgba(5, 15, 30, 0.95) 100%);
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.8);
             position: relative;
             z-index: 20;
-            border-bottom: 1px solid var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
         }
         
         #game-title {
-            font-size: 28px;
-            font-weight: bold;
+            font-size: 32px;
+            font-weight: 800;
             background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 0 0 10px rgba(0, 255, 170, 0.3);
+            text-shadow: 0 0 15px rgba(0, 255, 170, 0.5);
+            letter-spacing: 1px;
         }
         
         #game-info {
             display: flex;
-            gap: 25px;
+            gap: 20px;
             font-size: 16px;
         }
         
         .info-box {
-            background-color: rgba(0, 0, 0, 0.3);
-            padding: 8px 15px;
-            border-radius: 5px;
-            border: 1px solid rgba(0, 255, 170, 0.2);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 170, 0.3);
             display: flex;
+            flex-direction: column;
             align-items: center;
             gap: 5px;
+            min-width: 100px;
+            box-shadow: 0 0 10px rgba(0, 255, 170, 0.2);
         }
         
-        .info-box span {
+        .info-label {
+            font-size: 12px;
+            color: var(--light-color);
+            opacity: 0.8;
+        }
+        
+        .info-value {
             color: var(--primary-color);
             font-weight: bold;
+            font-size: 18px;
+            text-shadow: 0 0 5px rgba(0, 255, 170, 0.5);
         }
         
         #wave-timer {
@@ -82,13 +109,14 @@
             left: 50%;
             transform: translateX(-50%);
             background: linear-gradient(135deg, var(--danger-color), #ff0000);
-            padding: 8px 25px;
+            padding: 10px 30px;
             border-radius: 30px;
             font-weight: bold;
             font-size: 16px;
-            box-shadow: 0 0 15px rgba(255, 85, 85, 0.5);
+            box-shadow: 0 0 20px rgba(255, 85, 85, 0.6);
             display: none;
             animation: pulse 1.5s infinite;
+            z-index: 10;
         }
         
         @keyframes pulse {
@@ -97,6 +125,7 @@
             100% { transform: translateX(-50%) scale(1); }
         }
         
+        /* Game Board Styles */
         #game-board {
             position: relative;
             flex-grow: 1;
@@ -105,17 +134,19 @@
             background-image: 
                 radial-gradient(circle at 1px 1px, rgba(0, 255, 170, 0.1) 1px, transparent 0);
             background-size: 40px 40px;
-           
         }
         
+        /* Base Styles */
         #base {
             position: absolute;
-            width: 100px;
-            height: 100px;
-            background: radial-gradient(circle, var(--primary-color), #00cc99);
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle at 30% 30%, var(--primary-color), #00cc99, #008866);
             border-radius: 50%;
-            border: 5px solid var(--light-color);
-            box-shadow: 0 0 20px var(--primary-color);
+            border: 5px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 
+                0 0 30px var(--primary-color),
+                inset 0 0 20px rgba(255, 255, 255, 0.5);
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -127,13 +158,71 @@
             color: var(--dark-color);
             z-index: 10;
             transition: all 0.3s;
+            overflow: hidden;
+        }
+        
+        #base::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.4), transparent 60%);
+            border-radius: 50%;
+        }
+        
+        #base::after {
+            content: '';
+            position: absolute;
+            width: 80%;
+            height: 80%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.2);
         }
         
         #base:hover {
             transform: translate(-50%, -50%) scale(1.05);
-            box-shadow: 0 0 30px var(--primary-color);
+            box-shadow: 
+                0 0 40px var(--primary-color),
+                inset 0 0 25px rgba(255, 255, 255, 0.6);
         }
         
+        #base-name {
+            position: relative;
+            z-index: 2;
+            font-weight: 800;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        #base-upgrade {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--dark-color);
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+            z-index: 11;
+            box-shadow: 0 0 15px rgba(0, 255, 170, 0.5);
+            transition: all 0.3s;
+        }
+        
+        #base:hover #base-upgrade {
+            display: block;
+        }
+        
+        #base-upgrade:hover {
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 170, 0.8);
+        }
+        
+        /* Building Styles */
         .building {
             position: absolute;
             border-radius: 8px;
@@ -144,66 +233,145 @@
             font-size: 12px;
             font-weight: bold;
             color: white;
-            text-shadow: 1px 1px 2px #000;
+            text-shadow: 1px 1px 3px #000;
             cursor: pointer;
             transition: all 0.2s;
             z-index: 5;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
         }
         
         .building:hover {
             transform: scale(1.1);
             z-index: 15;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
         }
         
-        /* Estilos únicos para cada construção */
+        .building-inner {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .building-icon {
+            font-size: 24px;
+            z-index: 2;
+        }
+        
+        /* Unique building styles */
         .miner {
-            background: linear-gradient(135deg, #2b7a0b, #5bb318);
+            background: linear-gradient(135deg, var(--miner-color), #5bb318, #3e8e0f);
             border: 2px solid #a8ff78;
-            box-shadow: 0 0 15px rgba(43, 122, 11, 0.6);
+            box-shadow: 0 0 20px rgba(43, 122, 11, 0.7);
             clip-path: polygon(50% 0%, 80% 20%, 100% 50%, 80% 80%, 50% 100%, 20% 80%, 0% 50%, 20% 20%);
         }
         
+        .miner::before {
+            content: '';
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent 70%);
+        }
+        
         .cannon {
-            background: linear-gradient(135deg, #7d5a50, #b4846c);
+            background: linear-gradient(135deg, var(--cannon-color), #b4846c, #8a5c4c);
             border: 2px solid #ffb48f;
-            box-shadow: 0 0 15px rgba(125, 90, 80, 0.6);
+            box-shadow: 0 0 20px rgba(125, 90, 80, 0.7);
             clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
         }
         
+        .cannon::before {
+            content: '';
+            position: absolute;
+            width: 40%;
+            height: 40%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent 70%);
+            top: 20%;
+            left: 30%;
+        }
+        
         .wall {
-            background: linear-gradient(135deg, #555555, #888888);
+            background: linear-gradient(135deg, var(--wall-color), #888888, #666666);
             border: 2px solid #cccccc;
-            box-shadow: 0 0 15px rgba(85, 85, 85, 0.6);
+            box-shadow: 0 0 20px rgba(85, 85, 85, 0.7);
             clip-path: polygon(0% 0%, 100% 0%, 100% 30%, 70% 50%, 100% 70%, 100% 100%, 0% 100%, 0% 70%, 30% 50%, 0% 30%);
         }
         
+        .wall::before {
+            content: '';
+            position: absolute;
+            width: 80%;
+            height: 20%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            top: 40%;
+        }
+        
         .laser {
-            background: linear-gradient(135deg, #3a0ca3, #7209b7);
+            background: linear-gradient(135deg, var(--laser-color), #7209b7, #560bad);
             border: 2px solid #f72585;
-            box-shadow: 0 0 20px rgba(58, 12, 163, 0.7);
+            box-shadow: 0 0 25px rgba(58, 12, 163, 0.8);
             clip-path: circle(50% at 50% 50%);
         }
         
+        .laser::before {
+            content: '';
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent 70%);
+            border-radius: 50%;
+            animation: rotate 5s linear infinite;
+        }
+        
         .missile {
-            background: linear-gradient(135deg, #ff5e00, #ff2900);
+            background: linear-gradient(135deg, var(--missile-color), #ff2900, #cc2200);
             border: 2px solid #ffcc00;
-            box-shadow: 0 0 20px rgba(255, 94, 0, 0.7);
+            box-shadow: 0 0 25px rgba(255, 94, 0, 0.8);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+        
+        .missile::before {
+            content: '';
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent 70%);
             clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
         }
         
         .slow-tower {
-            background: linear-gradient(135deg, #00b4d8, #0077b6);
+            background: linear-gradient(135deg, var(--slow-color), #0077b6, #005a8c);
             border: 2px solid #90e0ef;
-            box-shadow: 0 0 20px rgba(0, 180, 216, 0.7);
+            box-shadow: 0 0 25px rgba(0, 180, 216, 0.8);
             clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
         }
         
+        .slow-tower::before {
+            content: '❄️';
+            position: absolute;
+            font-size: 20px;
+            opacity: 0.7;
+            animation: float 3s ease-in-out infinite;
+        }
+        
         .barracks {
-            background: linear-gradient(135deg, #6a040f, #9d0208);
+            background: linear-gradient(135deg, var(--barracks-color), #9d0208, #7a0106);
             border: 2px solid #dc2f02;
-            box-shadow: 0 0 20px rgba(106, 4, 15, 0.7);
+            box-shadow: 0 0 25px rgba(106, 4, 15, 0.8);
             clip-path: polygon(0% 0%, 100% 0%, 100% 70%, 50% 100%, 0% 70%);
+        }
+        
+        .barracks::before {
+            content: '';
+            position: absolute;
+            width: 60%;
+            height: 40%;
+            background: radial-gradient(ellipse, rgba(255, 255, 255, 0.3), transparent 70%);
+            top: 20%;
         }
         
         .building-level {
@@ -212,14 +380,15 @@
             right: 2px;
             background-color: rgba(0, 0, 0, 0.7);
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 11px;
+            font-size: 12px;
             color: var(--primary-color);
             border: 1px solid var(--primary-color);
+            z-index: 3;
         }
         
         .health-bar {
@@ -230,6 +399,7 @@
             height: 6px;
             background-color: rgba(255, 0, 0, 0.3);
             border-radius: 0 0 5px 5px;
+            overflow: hidden;
         }
         
         .health-fill {
@@ -239,29 +409,34 @@
             transition: width 0.3s;
         }
         
-        .mineral {
+        .upgrade-indicator {
             position: absolute;
-            width: 24px;
-            height: 24px;
-            background: radial-gradient(circle at 30% 30%, #ffd700, #daa520);
-            border-radius: 50%;
-            border: 2px solid #ffcc00;
-            z-index: 2;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-            animation: float 3s ease-in-out infinite;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-color);
+            color: var(--dark-color);
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 10px;
+            display: none;
+            animation: bounce 0.5s infinite alternate;
+            z-index: 4;
         }
         
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
-            100% { transform: translateY(0px); }
+        @keyframes bounce {
+            from { transform: translateX(-50%) translateY(0); }
+            to { transform: translateX(-50%) translateY(-5px); }
         }
         
+        .building:hover .upgrade-indicator {
+            display: block;
+        }
+        
+        /* Enemy Styles */
         .enemy {
             position: absolute;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -270,8 +445,480 @@
             color: white;
             z-index: 4;
             transition: all 0.2s;
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
             animation: pulseEnemy 2s infinite;
+            border-radius: 50%;
+        }
+        
+        .enemy-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .enemy-icon {
+            font-size: 16px;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            z-index: 2;
+        }
+        
+        @keyframes pulseEnemy {
+            0% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.8); }
+            100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
+        }
+        
+        .enemy-type1 {
+            background: radial-gradient(circle at 30% 30%, #ff5555, #cc0000, #990000);
+            border: 2px solid #ff0000;
+            width: 36px;
+            height: 36px;
+        }
+        
+        .enemy-type1::before {
+            content: '👁';
+            position: absolute;
+            font-size: 10px;
+            top: 25%;
+            left: 30%;
+        }
+        
+        .enemy-type2 {
+            background: radial-gradient(circle at 30% 30%, #ff9966, #cc6600, #994c00);
+            border: 2px solid #ff6600;
+            width: 32px;
+            height: 32px;
+        }
+        
+        .enemy-type2::before {
+            content: '⚡';
+            position: absolute;
+            font-size: 10px;
+            top: 25%;
+        }
+        
+        .enemy-type3 {
+            background: radial-gradient(circle at 30% 30%, #aa55ff, #6600cc, #4c0099);
+            border: 2px solid #9900ff;
+            width: 44px;
+            height: 44px;
+        }
+        
+        .enemy-type3::before {
+            content: '🛡';
+            position: absolute;
+            font-size: 12px;
+            top: 20%;
+        }
+        
+        .enemy-type4 {
+            background: radial-gradient(circle at 30% 30%, #00aa88, #008866, #00664c);
+            border: 2px solid #00ffcc;
+            width: 38px;
+            height: 38px;
+        }
+        
+        .enemy-type4::before {
+            content: '🏹';
+            position: absolute;
+            font-size: 12px;
+            top: 20%;
+        }
+        
+        .enemy-type5 {
+            background: radial-gradient(circle at 30% 30%, #ff00aa, #cc0088, #990066);
+            border: 2px solid #ff66cc;
+            width: 34px;
+            height: 34px;
+        }
+        
+        .enemy-type5::before {
+            content: '✨';
+            position: absolute;
+            font-size: 10px;
+            top: 25%;
+        }
+        
+        .enemy-boss {
+            background: radial-gradient(circle at 30% 30%, #ff0000, #880000, #660000);
+            border: 3px solid #ff8800;
+            width: 70px;
+            height: 70px;
+            animation: pulseBoss 1s infinite;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.9);
+        }
+        
+        .enemy-boss::before {
+            content: '👑';
+            position: absolute;
+            font-size: 20px;
+            top: 15%;
+            text-shadow: 0 0 10px gold;
+        }
+        
+        .enemy-boss::after {
+            content: '';
+            position: absolute;
+            width: 80%;
+            height: 80%;
+            border: 2px solid rgba(255, 136, 0, 0.5);
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(255, 136, 0, 0.7);
+            animation: rotate 3s linear infinite;
+        }
+        
+        @keyframes pulseBoss {
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 0, 0, 0.8); }
+            50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(255, 136, 0, 0.9); }
+            100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 0, 0, 0.8); }
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .enemy-health, .ally-health {
+            position: absolute;
+            top: -12px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .enemy-health-fill, .ally-health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #00cc66);
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+        
+        /* Build Menu Styles */
+        #build-menu {
+            background: linear-gradient(180deg, rgba(5, 15, 30, 0.95) 0%, rgba(10, 25, 47, 0.95) 100%);
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            border-top: 2px solid var(--primary-color);
+            z-index: 20;
+            overflow-x: auto;
+            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.8);
+        }
+        
+        .build-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 120px;
+            min-width: 120px;
+            border: 1px solid rgba(0, 255, 170, 0.3);
+            box-shadow: 0 0 10px rgba(0, 255, 170, 0.1);
+        }
+        
+        .build-option:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3));
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px rgba(0, 255, 170, 0.3);
+        }
+        
+        .build-option.selected {
+            background: linear-gradient(135deg, rgba(0, 255, 170, 0.2), rgba(0, 200, 255, 0.2));
+            border: 1px solid var(--primary-color);
+            box-shadow: 0 0 20px rgba(0, 255, 170, 0.5);
+        }
+        
+        .build-option.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .build-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(0, 255, 170, 0.3);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .build-name {
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: var(--light-color);
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .build-cost {
+            font-size: 12px;
+            color: var(--warning-color);
+            font-weight: 500;
+        }
+        
+        .build-limit {
+            font-size: 11px;
+            color: var(--primary-color);
+            margin-top: 3px;
+            font-weight: 500;
+        }
+        
+        /* Building UI Panel */
+        #building-ui {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(10, 25, 47, 0.95), rgba(5, 15, 30, 0.95));
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 30px rgba(0, 255, 170, 0.4);
+            z-index: 25;
+            display: none;
+            width: 320px;
+        }
+        
+        #building-ui h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-size: 20px;
+            border-bottom: 1px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+        
+        .building-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--light-color);
+            opacity: 0.8;
+        }
+        
+        .stat-value {
+            font-size: 14px;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .upgrade-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        
+        .upgrade-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        #upgrade-single {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--dark-color);
+        }
+        
+        #upgrade-multi {
+            background: linear-gradient(135deg, var(--warning-color), #ff7700);
+            color: var(--dark-color);
+        }
+        
+        .upgrade-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+        }
+        
+        .upgrade-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        #close-building-ui {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: var(--light-color);
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        /* Base UI Panel */
+        #base-ui {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(10, 25, 47, 0.95), rgba(5, 15, 30, 0.95));
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 30px rgba(0, 255, 170, 0.4);
+            z-index: 25;
+            display: none;
+            width: 300px;
+        }
+        
+        #base-ui h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-size: 20px;
+            border-bottom: 1px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+        
+        #close-base-ui {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: var(--light-color);
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        #upgrade-base {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--dark-color);
+            border: none;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+        
+        #upgrade-base:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+        }
+        
+        #upgrade-base:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Game Over Screen */
+        #game-over {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.95));
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 30;
+        }
+        
+        #game-over h1 {
+            font-size: 60px;
+            color: var(--danger-color);
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(255, 85, 85, 0.8);
+            animation: gameOverPulse 1.5s infinite;
+        }
+        
+        @keyframes gameOverPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        #game-over p {
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: var(--light-color);
+            text-align: center;
+        }
+        
+        #game-over span {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        #restart-btn {
+            padding: 15px 50px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--dark-color);
+            border: none;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(0, 255, 170, 0.6);
+        }
+        
+        #restart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 255, 170, 0.9);
+        }
+        
+        /* Other Elements */
+        .mineral {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: radial-gradient(circle at 30% 30%, #ffd700, #daa520, #b8860b);
+            border-radius: 50%;
+            border: 2px solid #ffcc00;
+            z-index: 2;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .mineral::before {
+            content: '';
+            position: absolute;
+            width: 30%;
+            height: 30%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8), transparent 70%);
+            border-radius: 50%;
+            top: 20%;
+            left: 20%;
         }
         
         .ally {
@@ -287,71 +934,15 @@
             color: white;
             z-index: 4;
             transition: all 0.2s;
-            box-shadow: 0 0 10px rgba(0, 100, 255, 0.5);
+            box-shadow: 0 0 15px rgba(0, 100, 255, 0.6);
             background: radial-gradient(circle at 30% 30%, var(--ally-color), #0a1a4a);
             border: 2px solid #0077ff;
         }
         
-        @keyframes pulseEnemy {
-            0% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
-            50% { box-shadow: 0 0 15px rgba(255, 0, 0, 0.8); }
-            100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
-        }
-        
-        .enemy-type1 {
-            background: radial-gradient(circle at 30% 30%, #ff5555, #cc0000);
-            border: 2px solid #ff0000;
-        }
-        
-        .enemy-type2 {
-            background: radial-gradient(circle at 30% 30%, #ff9966, #cc6600);
-            border: 2px solid #ff6600;
-        }
-        
-        .enemy-type3 {
-            background: radial-gradient(circle at 30% 30%, #aa55ff, #6600cc);
-            border: 2px solid #9900ff;
-        }
-        
-        .enemy-type4 {
-            background: radial-gradient(circle at 30% 30%, #00aa88, #008866);
-            border: 2px solid #00ffcc;
-        }
-        
-        .enemy-type5 {
-            background: radial-gradient(circle at 30% 30%, #ff00aa, #cc0088);
-            border: 2px solid #ff66cc;
-        }
-        
-        .enemy-boss {
-            background: radial-gradient(circle at 30% 30%, #ff0000, #880000);
-            border: 2px solid #ff8800;
-            width: 60px;
-            height: 60px;
-            animation: pulseBoss 1s infinite;
-        }
-        
-        @keyframes pulseBoss {
-            0% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 0, 0, 0.8); }
-            50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 136, 0, 0.9); }
-            100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 0, 0, 0.8); }
-        }
-        
-        .enemy-health, .ally-health {
+        .ally::before {
+            content: '⚔️';
             position: absolute;
-            top: -12px;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background-color: rgba(0, 0, 0, 0.5);
-            border-radius: 2px;
-        }
-        
-        .enemy-health-fill, .ally-health-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00ff00, #00cc66);
-            border-radius: 2px;
-            transition: width 0.3s;
+            font-size: 10px;
         }
         
         .projectile {
@@ -361,27 +952,33 @@
             background-color: var(--warning-color);
             border-radius: 50%;
             z-index: 3;
-            box-shadow: 0 0 10px var(--warning-color);
+            box-shadow: 0 0 15px var(--warning-color);
         }
         
         .missile-projectile {
             position: absolute;
             width: 15px;
             height: 15px;
-            background: radial-gradient(circle, #ff6600, #ff2900);
+            background: radial-gradient(circle, #ff6600, #ff2900, #cc2200);
             border-radius: 50%;
             z-index: 3;
-            box-shadow: 0 0 15px #ff6600;
+            box-shadow: 0 0 20px #ff6600;
+            animation: missileGlow 0.5s infinite alternate;
+        }
+        
+        @keyframes missileGlow {
+            from { box-shadow: 0 0 15px #ff6600; }
+            to { box-shadow: 0 0 25px #ff9900; }
         }
         
         .explosion {
             position: absolute;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 100, 0, 0.8), rgba(255, 200, 0, 0));
+            background: radial-gradient(circle, rgba(255, 100, 0, 0.8), rgba(255, 200, 0, 0.8), rgba(255, 100, 0, 0));
             z-index: 3;
             transform: scale(0);
             opacity: 0.8;
-            animation: explode 0.3s forwards;
+            animation: explode 0.5s forwards;
         }
         
         @keyframes explode {
@@ -391,251 +988,48 @@
         
         .laser-beam {
             position: absolute;
-            background: linear-gradient(90deg, rgba(0, 255, 255, 0.8), rgba(0, 200, 255, 0.8));
+            background: linear-gradient(90deg, rgba(0, 255, 255, 0.8), rgba(0, 200, 255, 0.8), rgba(0, 150, 255, 0.8));
             z-index: 3;
             opacity: 0.9;
-            filter: blur(1px);
+            filter: blur(2px);
+            border-radius: 2px;
         }
         
         .electric-beam {
             position: absolute;
-            background: linear-gradient(90deg, rgba(150, 0, 255, 0.8), rgba(200, 0, 255, 0.8));
+            background: linear-gradient(90deg, rgba(150, 0, 255, 0.8), rgba(200, 0, 255, 0.8), rgba(150, 0, 255, 0.8));
             z-index: 3;
             opacity: 0.9;
-            filter: blur(1px);
+            filter: blur(2px);
+            border-radius: 2px;
             animation: electricPulse 0.1s infinite alternate;
         }
         
         @keyframes electricPulse {
-            0% { opacity: 0.9; filter: blur(1px); }
-            100% { opacity: 1; filter: blur(2px); }
+            0% { opacity: 0.9; filter: blur(2px); }
+            100% { opacity: 1; filter: blur(3px); }
         }
         
         .missile-trail {
             position: absolute;
-            background: linear-gradient(90deg, rgba(255, 100, 0, 0.8), rgba(255, 200, 0, 0.8));
+            background: linear-gradient(90deg, rgba(255, 100, 0, 0.8), rgba(255, 200, 0, 0.8), rgba(255, 100, 0, 0.8));
             z-index: 3;
             opacity: 0.7;
             filter: blur(1px);
+            border-radius: 1px;
         }
         
         .slow-field {
             position: absolute;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(0, 180, 216, 0.3), transparent 70%);
+            background: radial-gradient(circle, rgba(0, 180, 216, 0.4), rgba(0, 150, 200, 0.3), transparent 70%);
             z-index: 2;
+            animation: pulseSlow 2s infinite alternate;
         }
         
-        #build-menu {
-            background-color: rgba(10, 25, 47, 0.9);
-            padding: 15px;
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            border-top: 1px solid var(--primary-color);
-            z-index: 20;
-            overflow-x: auto;
-        }
-        
-        .build-option {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 12px;
-            background-color: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            width: 110px;
-            min-width: 110px;
-            border: 1px solid rgba(0, 255, 170, 0.3);
-        }
-        
-        .build-option:hover {
-            transform: scale(1.05);
-            background-color: rgba(0, 0, 0, 0.5);
-            border-color: var(--primary-color);
-        }
-        
-        .build-option.selected {
-            background-color: rgba(0, 255, 170, 0.2);
-            border: 1px solid var(--primary-color);
-            box-shadow: 0 0 15px rgba(0, 255, 170, 0.5);
-        }
-        
-        .build-option.disabled {
-            opacity: 0.5;
-            pointer-events: none;
-        }
-        
-        .build-icon {
-            width: 50px;
-            height: 50px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            background-color: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(0, 255, 170, 0.3);
-        }
-        
-        .build-name {
-            font-size: 14px;
-            margin-bottom: 5px;
-            color: var(--light-color);
-        }
-        
-        .build-cost {
-            font-size: 12px;
-            color: var(--warning-color);
-        }
-        
-        .build-limit {
-            font-size: 11px;
-            color: var(--primary-color);
-            margin-top: 3px;
-        }
-        
-        #game-over {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 30;
-        }
-        
-        #game-over h1 {
-            font-size: 48px;
-            color: var(--danger-color);
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px rgba(255, 85, 85, 0.7);
-            animation: gameOverPulse 1.5s infinite;
-        }
-        
-        @keyframes gameOverPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        #game-over p {
-            font-size: 20px;
-            margin-bottom: 30px;
-            color: var(--light-color);
-        }
-        
-        #game-over span {
-            color: var(--primary-color);
-            font-weight: bold;
-        }
-        
-        #restart-btn {
-            padding: 15px 40px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: var(--dark-color);
-            border: none;
-            border-radius: 30px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 0 15px rgba(0, 255, 170, 0.5);
-        }
-        
-        #restart-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(0, 255, 170, 0.8);
-        }
-        
-        .tooltip {
-            position: absolute;
-            background-color: rgba(10, 25, 47, 0.95);
-            color: var(--light-color);
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 14px;
-            pointer-events: none;
-            z-index: 100;
-            max-width: 250px;
-            display: none;
-            border: 1px solid var(--primary-color);
-            box-shadow: 0 0 15px rgba(0, 255, 170, 0.3);
-        }
-        
-        .tooltip h3 {
-            margin: 0 0 10px 0;
-            color: var(--primary-color);
-            font-size: 16px;
-            border-bottom: 1px solid var(--primary-color);
-            padding-bottom: 5px;
-        }
-        
-        .tooltip p {
-            margin: 5px 0;
-        }
-        
-        .tooltip span {
-            color: var(--primary-color);
-            font-weight: bold;
-        }
-        
-        #base-upgrade {
-            position: absolute;
-            bottom: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: var(--dark-color);
-            border: none;
-            border-radius: 20px;
-            padding: 5px 15px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            display: none;
-            z-index: 11;
-            box-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
-        }
-        
-        #base:hover #base-upgrade {
-            display: block;
-        }
-        
-        .upgrade-indicator {
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--primary-color);
-            color: var(--dark-color);
-            font-size: 10px;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 10px;
-            display: none;
-            animation: bounce 0.5s infinite alternate;
-        }
-        
-        @keyframes bounce {
-            from { transform: translateX(-50%) translateY(0); }
-            to { transform: translateX(-50%) translateY(-5px); }
-        }
-        
-        .building:hover .upgrade-indicator {
-            display: block;
-        }
-        
-        /* Efeitos sonoros (ocultos) */
-        .audio-element {
-            display: none;
+        @keyframes pulseSlow {
+            from { opacity: 0.3; }
+            to { opacity: 0.5; }
         }
         
         /* Scrollbar personalizada */
@@ -651,32 +1045,56 @@
             background-color: var(--primary-color);
             border-radius: 4px;
         }
+        
+        /* Selection Grid */
+        .selection-grid {
+            position: absolute;
+            border: 2px dashed var(--primary-color);
+            background-color: rgba(0, 255, 170, 0.1);
+            z-index: 9;
+            display: none;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
     <div id="game-container">
         <div id="header">
-            <div id="game-title">TOWER DEFENSE </div>
+            <div id="game-title">TOWER DEFENSE EVOLVED</div>
             <div id="game-info">
-                <div class="info-box">Wave: <span id="wave-display">1</span></div>
-                <div class="info-box">Dinheiro: <span id="money-display">100</span></div>
-                <div class="info-box">Núcleo HP: <span id="base-hp">700</span>/700</div>
-                <div class="info-box">Núcleo Level: <span id="base-level">1</span></div>
+                <div class="info-box">
+                    <div class="info-label">WAVE</div>
+                    <div class="info-value" id="wave-display">1</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label">DIAMANTES</div>
+                    <div class="info-value" id="money-display">100</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label">NÚCLEO HP</div>
+                    <div class="info-value" id="base-hp">700/700</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label">NÚCLEO LVL</div>
+                    <div class="info-value" id="base-level">1</div>
+                </div>
             </div>
             <div id="wave-timer">Próxima Wave: <span id="timer-display">30</span>s</div>
         </div>
         
         <div id="game-board">
             <div id="base">
-                Núcleo
+                <div id="base-name">NÚCLEO</div>
                 <button id="base-upgrade">Upgrade</button>
             </div>
             
             <div id="game-over">
                 <h1>GAME OVER</h1>
-                <p>Seu Núcleo foi destruída na wave <span id="final-wave">1</span></p>
+                <p>Seu Núcleo foi destruído na wave <span id="final-wave">1</span></p>
                 <button id="restart-btn">Reiniciar</button>
             </div>
+            
+            <div class="selection-grid" id="selection-grid"></div>
         </div>
         
         <div id="build-menu">
@@ -684,19 +1102,19 @@
                 <div class="build-icon">⛏️</div>
                 <div class="build-name">Mineradora</div>
                 <div class="build-cost">Custo: 25</div>
-                <div class="build-limit">Limite: <span id="miner-limit">3/3</span></div>
+                <div class="build-limit">Limite: <span id="miner-limit">0/3</span></div>
             </div>
             <div class="build-option" data-type="cannon" data-cost="110">
                 <div class="build-icon">💣</div>
-                <div class="build-name">Canhão </div>
+                <div class="build-name">Canhão</div>
                 <div class="build-cost">Custo: 110</div>
-                <div class="build-limit">Limite: <span id="cannon-limit">2/2</span></div>
+                <div class="build-limit">Limite: <span id="cannon-limit">0/2</span></div>
             </div>
             <div class="build-option" data-type="wall" data-cost="15">
                 <div class="build-icon">🧱</div>
                 <div class="build-name">Muro</div>
                 <div class="build-cost">Custo: 15</div>
-                <div class="build-limit">Limite: <span id="wall-limit">5/5</span></div>
+                <div class="build-limit">Limite: <span id="wall-limit">0/5</span></div>
             </div>
             <div class="build-option disabled" data-type="laser" data-cost="750">
                 <div class="build-icon">⚡</div>
@@ -704,19 +1122,19 @@
                 <div class="build-cost">Custo: 750</div>
                 <div class="build-limit">Disponível no level 7</div>
             </div>
-            <div class="build-option disabled" data-type="missile" data-cost="500">
+            <div class="build-option disabled" data-type="missile" data-cost="5000">
                 <div class="build-icon">🚀</div>
                 <div class="build-name">Fusor de Plasma</div>
                 <div class="build-cost">Custo: 5.000</div>
                 <div class="build-limit">Disponível no level 10</div>
             </div>
-            <div class="build-option disabled" data-type="slow-tower" data-cost="300">
+            <div class="build-option disabled" data-type="slow-tower" data-cost="3000">
                 <div class="build-icon">❄️</div>
                 <div class="build-name">Torre de Gelo</div>
                 <div class="build-cost">Custo: 3.000</div>
                 <div class="build-limit">Disponível no level 15</div>
             </div>
-            <div class="build-option disabled" data-type="barracks" data-cost="1000">
+            <div class="build-option disabled" data-type="barracks" data-cost="10000">
                 <div class="build-icon">🏰</div>
                 <div class="build-name">Quartel</div>
                 <div class="build-cost">Custo: 10.000</div>
@@ -724,7 +1142,54 @@
             </div>
         </div>
         
-        <div class="tooltip" id="tooltip"></div>
+        <!-- Building UI Panel -->
+        <div id="building-ui">
+            <button id="close-building-ui">✕</button>
+            <h2 id="building-name">Mineradora</h2>
+            <div class="building-stats">
+                <div class="stat-item">
+                    <div class="stat-label">Nível</div>
+                    <div class="stat-value" id="building-level">1</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">HP</div>
+                    <div class="stat-value" id="building-hp">200/200</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Produção</div>
+                    <div class="stat-value" id="building-production">5/s</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Upgrade</div>
+                    <div class="stat-value" id="building-upgrade-cost">80</div>
+                </div>
+            </div>
+            <div class="upgrade-buttons">
+                <button class="upgrade-btn" id="upgrade-single">Melhorar</button>
+                <button class="upgrade-btn" id="upgrade-multi">Melhorar 5x</button>
+            </div>
+        </div>
+        
+        <!-- Base UI Panel -->
+        <div id="base-ui">
+            <button id="close-base-ui">✕</button>
+            <h2>Núcleo</h2>
+            <div class="building-stats">
+                <div class="stat-item">
+                    <div class="stat-label">Nível</div>
+                    <div class="stat-value" id="base-ui-level">1</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">HP</div>
+                    <div class="stat-value" id="base-ui-hp">700/700</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Upgrade</div>
+                    <div class="stat-value" id="base-upgrade-cost">1.800</div>
+                </div>
+            </div>
+            <button id="upgrade-base">Upgrade Núcleo</button>
+        </div>
 
         <!-- Efeitos sonoros -->
         <audio id="build-sound" class="audio-element" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-interface-beep-221.mp3"></audio>
@@ -767,7 +1232,7 @@
             explosions: [],
             buildingLimits: {
                 miner: { current: 0, max: 3 },
-                cannon: { current: 0, max: 3 },
+                cannon: { current: 0, max: 2 },
                 wall: { current: 0, max: 5 },
                 laser: { current: 0, max: 0 },
                 missile: { current: 0, max: 0 },
@@ -790,7 +1255,7 @@
                     cost: 25,
                     hp: 200,
                     baseProduction: 11,
-                    productionMultiplier: 1.4, 
+                    productionMultiplier: 1.4,
                     upgradeCost: 80,
                     upgradeCostMultiplier: 1.6,
                     color: "#2b7a0b",
@@ -845,7 +1310,7 @@
                     icon: "⚡",
                     maxLevel: 100
                 },
-               missile: {
+                missile: {
                     name: "Fusor de Plasma",
                     cost: 5000,
                     hp: 350,
@@ -855,8 +1320,8 @@
                     attackSpeedMultiplier: 1.01,
                     range: 600,
                     splashRadius: 190,
-                    baseSplashDamage: 120, 
-                    splashDamageMultiplier: 1.7,  
+                    baseSplashDamage: 120,
+                    splashDamageMultiplier: 1.7,
                     upgradeCost: 500,
                     upgradeCostMultiplier: 2.1,
                     color: "#ff5e00",
@@ -885,7 +1350,7 @@
                     name: "Quartel",
                     cost: 10000,
                     hp: 1000,
-                    spawnRate: 25, 
+                    spawnRate: 25,
                     spawnAmount: 1,
                     unitDamage: 30,
                     unitHP: 100,
@@ -977,7 +1442,8 @@
                 baseUpgrade: document.getElementById('base-upgrade-sound'),
                 explosion: document.getElementById('explosion-sound'),
                 bossSpawn: document.getElementById('boss-spawn-sound')
-            }
+            },
+            selectedBuildingForUI: null
         };
 
         // DOM elements
@@ -995,7 +1461,22 @@
             finalWaveDisplay: document.getElementById('final-wave'),
             restartBtn: document.getElementById('restart-btn'),
             buildOptions: document.querySelectorAll('.build-option'),
-            tooltip: document.getElementById('tooltip'),
+            buildingUI: document.getElementById('building-ui'),
+            baseUI: document.getElementById('base-ui'),
+            closeBuildingUI: document.getElementById('close-building-ui'),
+            closeBaseUI: document.getElementById('close-base-ui'),
+            buildingName: document.getElementById('building-name'),
+            buildingLevel: document.getElementById('building-level'),
+            buildingHp: document.getElementById('building-hp'),
+            buildingProduction: document.getElementById('building-production'),
+            buildingUpgradeCost: document.getElementById('building-upgrade-cost'),
+            upgradeSingleBtn: document.getElementById('upgrade-single'),
+            upgradeMultiBtn: document.getElementById('upgrade-multi'),
+            baseUILevel: document.getElementById('base-ui-level'),
+            baseUIHp: document.getElementById('base-ui-hp'),
+            baseUpgradeCost: document.getElementById('base-upgrade-cost'),
+            upgradeBaseBtn: document.getElementById('upgrade-base'),
+            selectionGrid: document.getElementById('selection-grid'),
             minerLimit: document.getElementById('miner-limit'),
             cannonLimit: document.getElementById('cannon-limit'),
             wallLimit: document.getElementById('wall-limit'),
@@ -1034,8 +1515,8 @@
             // Reset building limits
             gameState.buildingLimits = {
                 miner: { current: 0, max: 3 },
-                cannon: { current: 0, max: 3 },
-                wall: { current: 0, max: 6 },
+                cannon: { current: 0, max: 2 },
+                wall: { current: 0, max: 5 },
                 laser: { current: 0, max: 0 },
                 missile: { current: 0, max: 0 },
                 'slow-tower': { current: 0, max: 0 },
@@ -1060,6 +1541,8 @@
             // Hide game over screen
             elements.gameOverScreen.style.display = 'none';
             elements.waveTimer.style.display = 'none';
+            elements.buildingUI.style.display = 'none';
+            elements.baseUI.style.display = 'none';
             
             // Disable buildings initially
             document.querySelector('.build-option[data-type="laser"]').classList.add('disabled');
@@ -1072,7 +1555,7 @@
         function updateDisplays() {
             elements.waveDisplay.textContent = gameState.wave;
             elements.moneyDisplay.textContent = formatNumber(Math.floor(gameState.money));
-            elements.baseHpDisplay.textContent = formatNumber(Math.floor(gameState.baseHP));
+            elements.baseHpDisplay.textContent = `${formatNumber(Math.floor(gameState.baseHP))}/${formatNumber(Math.floor(gameState.maxBaseHP))}`;
             elements.baseLevelDisplay.textContent = gameState.baseLevel;
         }
 
@@ -1141,6 +1624,10 @@
             // Calculate boss HP based on wave
             let bossHP = gameState.enemyStats.baseHP * Math.pow(gameState.enemyStats.hpMultiplier, Math.floor(gameState.wave / gameState.enemyStats.hpIncreaseWaveInterval)) * 10;
             
+            // Increase boss damage every 10 waves (10x)
+            let bossDamage = gameState.enemyStats.types.find(type => type.type === "boss").damage;
+            bossDamage *= Math.pow(10, Math.floor(gameState.wave / 10));
+            
             // Choose a random spawn point
             const spawnPoint = gameState.enemySpawnPoints[
                 Math.floor(Math.random() * gameState.enemySpawnPoints.length)
@@ -1171,6 +1658,15 @@
             boss.style.left = `${x}px`;
             boss.style.top = `${y}px`;
             
+            const enemyInner = document.createElement('div');
+            enemyInner.className = 'enemy-inner';
+            boss.appendChild(enemyInner);
+            
+            const enemyIcon = document.createElement('div');
+            enemyIcon.className = 'enemy-icon';
+            enemyIcon.textContent = '👑';
+            enemyInner.appendChild(enemyIcon);
+            
             const healthBar = document.createElement('div');
             healthBar.className = 'enemy-health';
             
@@ -1189,7 +1685,7 @@
                 hp: bossHP,
                 maxHP: bossHP,
                 speed: bossType.speed,
-                damage: bossType.damage,
+                damage: bossDamage,
                 healthFill,
                 isStunned: false,
                 stunTimer: 0,
@@ -1240,7 +1736,7 @@
                 let enemyType = null;
                 
                 for (const type of gameState.enemyStats.types) {
-                    if (type.type === "boss") continue; // Boss is spawned separately
+                    if (type.type === "boss") continue;
                     
                     cumulativeChance += type.spawnChance;
                     if (rand <= cumulativeChance) {
@@ -1258,6 +1754,33 @@
                 enemy.className = `enemy ${enemyType.class}`;
                 enemy.style.left = `${x}px`;
                 enemy.style.top = `${y}px`;
+                
+                const enemyInner = document.createElement('div');
+                enemyInner.className = 'enemy-inner';
+                enemy.appendChild(enemyInner);
+                
+                const enemyIcon = document.createElement('div');
+                enemyIcon.className = 'enemy-icon';
+                
+                // Set different icons for different enemy types
+                switch(enemyType.type) {
+                    case "normal":
+                        enemyIcon.textContent = '👁';
+                        break;
+                    case "fast":
+                        enemyIcon.textContent = '⚡';
+                        break;
+                    case "tank":
+                        enemyIcon.textContent = '🛡';
+                        break;
+                    case "ranged":
+                        enemyIcon.textContent = '🏹';
+                        break;
+                    default:
+                        enemyIcon.textContent = '👁';
+                }
+                
+                enemyInner.appendChild(enemyIcon);
                 
                 const healthBar = document.createElement('div');
                 healthBar.className = 'enemy-health';
@@ -1365,6 +1888,15 @@
             building.style.width = `${stats.size}px`;
             building.style.height = `${stats.size}px`;
             
+            const buildingInner = document.createElement('div');
+            buildingInner.className = 'building-inner';
+            building.appendChild(buildingInner);
+            
+            const buildingIcon = document.createElement('div');
+            buildingIcon.className = 'building-icon';
+            buildingIcon.textContent = stats.icon;
+            buildingInner.appendChild(buildingIcon);
+            
             const levelDisplay = document.createElement('div');
             levelDisplay.className = 'building-level';
             levelDisplay.textContent = '1';
@@ -1454,16 +1986,71 @@
             // Set up event listeners
             building.addEventListener('click', (e) => {
                 e.stopPropagation();
-                upgradeBuilding(newBuilding);
+                showBuildingUI(newBuilding);
             });
-            
-            building.addEventListener('mouseenter', () => showTooltip(newBuilding));
-            building.addEventListener('mouseleave', hideTooltip);
             
             return true;
         }
 
-        // Upgrade building
+        // Show building UI
+        function showBuildingUI(building) {
+            const stats = gameState.buildingStats[building.type];
+            const upgradeCost = Math.floor(stats.upgradeCost * Math.pow(stats.upgradeCostMultiplier, building.level - 1));
+            
+            // Update UI elements
+            elements.buildingName.textContent = stats.name;
+            elements.buildingLevel.textContent = building.level;
+            elements.buildingHp.textContent = `${formatNumber(Math.floor(building.hp))}/${formatNumber(Math.floor(building.maxHP))}`;
+            elements.buildingUpgradeCost.textContent = formatNumber(upgradeCost);
+            
+            // Update type-specific stats
+            if (building.type === 'miner') {
+                elements.buildingProduction.textContent = `${building.productionRate.toFixed(1)}/s`;
+                elements.buildingProduction.parentElement.style.display = 'flex';
+            } else {
+                elements.buildingProduction.parentElement.style.display = 'none';
+            }
+            
+            // Enable/disable upgrade buttons
+            const canUpgradeSingle = building.level < building.maxLevel && building.level < gameState.baseLevel && gameState.money >= upgradeCost;
+            const canUpgradeMulti = building.level + 5 <= gameState.baseLevel && building.level + 5 <= building.maxLevel;
+            
+            elements.upgradeSingleBtn.disabled = !canUpgradeSingle;
+            elements.upgradeMultiBtn.disabled = !canUpgradeSingle || !canUpgradeMulti;
+            
+            // Store reference to current building
+            gameState.selectedBuildingForUI = building;
+            
+            // Show UI
+            elements.buildingUI.style.display = 'block';
+        }
+
+        // Hide building UI
+        function hideBuildingUI() {
+            elements.buildingUI.style.display = 'none';
+            gameState.selectedBuildingForUI = null;
+        }
+
+        // Show base UI
+        function showBaseUI() {
+            // Update UI elements
+            elements.baseUILevel.textContent = gameState.baseLevel;
+            elements.baseUIHp.textContent = `${formatNumber(Math.floor(gameState.baseHP))}/${formatNumber(Math.floor(gameState.maxBaseHP))}`;
+            elements.baseUpgradeCost.textContent = formatNumber(gameState.baseUpgradeCost);
+            
+            // Enable/disable upgrade button
+            elements.upgradeBaseBtn.disabled = gameState.money < gameState.baseUpgradeCost || gameState.baseLevel >= 100;
+            
+            // Show UI
+            elements.baseUI.style.display = 'block';
+        }
+
+        // Hide base UI
+        function hideBaseUI() {
+            elements.baseUI.style.display = 'none';
+        }
+
+        // Upgrade building (single level)
         function upgradeBuilding(building) {
             // Check if building can be upgraded further
             if (building.level >= building.maxLevel) {
@@ -1503,7 +2090,7 @@
                         break;
                     case 'missile':
                         building.damage *= stats.damageMultiplier;
-                        building.splashDamage *= stats.splashDamageMultiplier;  
+                        building.splashDamage *= stats.splashDamageMultiplier;
                         building.attackSpeed /= stats.attackSpeedMultiplier;
                         if (building.level % 3 === 0) {
                             gameState.buildingLimits.missile.max++;
@@ -1535,7 +2122,110 @@
                 gameState.sounds.upgrade.play();
                 
                 updateDisplays();
-                showTooltip(building);
+                
+                // Update UI if it's open for this building
+                if (gameState.selectedBuildingForUI === building) {
+                    showBuildingUI(building);
+                }
+                
+                // Visual feedback
+                building.element.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    building.element.style.transform = 'scale(1)';
+                }, 300);
+            }
+        }
+
+        // Upgrade building (5 levels)
+        function upgradeBuildingMulti(building) {
+            // Check if building can be upgraded 5 levels
+            if (building.level + 5 > building.maxLevel) {
+                return;
+            }
+            
+            // Check if building can be upgraded further (based on base level)
+            if (building.level + 5 > gameState.baseLevel) {
+                return;
+            }
+            
+            const stats = gameState.buildingStats[building.type];
+            let totalUpgradeCost = 0;
+            
+            // Calculate total cost for 5 upgrades
+            for (let i = 0; i < 5; i++) {
+                totalUpgradeCost += Math.floor(stats.upgradeCost * Math.pow(stats.upgradeCostMultiplier, building.level + i - 1));
+            }
+            
+            if (gameState.money >= totalUpgradeCost) {
+                gameState.money -= totalUpgradeCost;
+                
+                // Apply 5 upgrades
+                for (let i = 0; i < 5; i++) {
+                    building.level++;
+                    
+                    // Update building properties based on type
+                    switch (building.type) {
+                        case 'miner':
+                            building.productionRate *= stats.productionMultiplier;
+                            break;
+                        case 'cannon':
+                            building.damage *= stats.damageMultiplier;
+                            building.attackSpeed /= stats.attackSpeedMultiplier;
+                            break;
+                        case 'wall':
+                            building.maxHP *= stats.hpMultiplier;
+                            break;
+                        case 'laser':
+                            building.damage *= stats.damageMultiplier;
+                            building.attackSpeed /= stats.attackSpeedMultiplier;
+                            break;
+                        case 'missile':
+                            building.damage *= stats.damageMultiplier;
+                            building.splashDamage *= stats.splashDamageMultiplier;
+                            building.attackSpeed /= stats.attackSpeedMultiplier;
+                            if (building.level % 3 === 0) {
+                                gameState.buildingLimits.missile.max++;
+                            }
+                            break;
+                        case 'slow-tower':
+                            // Increase slow amount up to max
+                            building.slowAmount = Math.min(
+                                stats.baseSlowAmount + (building.level - 1) * stats.slowAmountPerLevel,
+                                stats.maxSlowAmount
+                            );
+                            building.slowRadius *= 1.05;
+                            break;
+                        case 'barracks':
+                            building.spawnAmount += 1;
+                            building.unitDamage *= 1.5;
+                            building.unitHP *= 1.2;
+                            break;
+                    }
+                    
+                    // Increase HP for all buildings
+                    building.maxHP *= 1.1;
+                }
+                
+                // Restore full HP
+                building.hp = building.maxHP;
+                building.healthFill.style.width = '100%';
+                
+                // Update level display
+                building.element.querySelector('.building-level').textContent = building.level;
+                
+                // Update building limits display
+                updateBuildingLimitsDisplay();
+                
+                // Play sound
+                gameState.sounds.upgrade.currentTime = 0;
+                gameState.sounds.upgrade.play();
+                
+                updateDisplays();
+                
+                // Update UI if it's open for this building
+                if (gameState.selectedBuildingForUI === building) {
+                    showBuildingUI(building);
+                }
                 
                 // Visual feedback
                 building.element.style.transform = 'scale(1.2)';
@@ -1564,24 +2254,28 @@
                 }
                 
                 // Unlock buildings at certain levels
-                if (gameState.baseLevel >= 15) {
-                    gameState.buildingLimits['slow-tower'].max = 1;
-                    document.querySelector('.build-option[data-type="slow-tower"]').classList.remove('disabled');
+                if (gameState.baseLevel >= 7) {
+                    gameState.buildingLimits.laser.max += 1;
+                    document.querySelector('.build-option[data-type="laser"]').classList.remove('disabled');
+                    document.querySelector('.build-option[data-type="laser"] .build-limit').textContent = `Limite: ${gameState.buildingLimits.laser.current}/${gameState.buildingLimits.laser.max}`;
                 }
                 
                 if (gameState.baseLevel >= 10) {
                     gameState.buildingLimits.missile.max = 1;
                     document.querySelector('.build-option[data-type="missile"]').classList.remove('disabled');
+                    document.querySelector('.build-option[data-type="missile"] .build-limit').textContent = `Limite: ${gameState.buildingLimits.missile.current}/${gameState.buildingLimits.missile.max}`;
                 }
                 
-                if (gameState.baseLevel >= 7) {
-                    gameState.buildingLimits.laser.max += 1;
-                    document.querySelector('.build-option[data-type="laser"]').classList.remove('disabled');
+                if (gameState.baseLevel >= 15) {
+                    gameState.buildingLimits['slow-tower'].max = 1;
+                    document.querySelector('.build-option[data-type="slow-tower"]').classList.remove('disabled');
+                    document.querySelector('.build-option[data-type="slow-tower"] .build-limit').textContent = `Limite: ${gameState.buildingLimits['slow-tower'].current}/${gameState.buildingLimits['slow-tower'].max}`;
                 }
                 
                 if (gameState.baseLevel >= 25) {
                     gameState.buildingLimits.barracks.max = 1;
                     document.querySelector('.build-option[data-type="barracks"]').classList.remove('disabled');
+                    document.querySelector('.build-option[data-type="barracks"] .build-limit').textContent = `Limite: ${gameState.buildingLimits.barracks.current}/${gameState.buildingLimits.barracks.max}`;
                 }
                 
                 updateBuildingLimitsDisplay();
@@ -1591,6 +2285,11 @@
                 gameState.sounds.baseUpgrade.currentTime = 0;
                 gameState.sounds.baseUpgrade.play();
                 
+                // Update base UI if it's open
+                if (elements.baseUI.style.display === 'block') {
+                    showBaseUI();
+                }
+                
                 // Visual feedback
                 elements.base.style.transform = 'translate(-50%, -50%) scale(1.2)';
                 setTimeout(() => {
@@ -1599,133 +2298,18 @@
             }
         }
 
-        // Show tooltip for building
-        function showTooltip(building) {
-            const stats = gameState.buildingStats[building.type];
-            const upgradeCost = Math.floor(stats.upgradeCost * Math.pow(stats.upgradeCostMultiplier, building.level - 1));
-            
-            let tooltipText = `<h3>${stats.name} (Nível ${building.level}${building.level >= building.maxLevel ? ' - Nível Máximo' : ''})</h3>`;
-            tooltipText += `<p><strong>HP:</strong> ${formatNumber(Math.floor(building.hp))}/${formatNumber(Math.floor(building.maxHP))}</p>`;
-            
-            if (building.level < building.maxLevel) {
-                if (building.level < gameState.baseLevel) {
-                    tooltipText += `<p><strong>Upgrade:</strong> ${formatNumber(upgradeCost)} diamantes (Nível ${building.level + 1})</p>`;
-                } else {
-                    tooltipText += `<p><strong>Upgrade:</strong> Melhore sua base para nível ${gameState.baseLevel + 1} primeiro</p>`;
-                }
-            }
-            
-            switch (building.type) {
-                case 'miner':
-                    tooltipText += `<p><strong>Produção:</strong> ${building.productionRate.toFixed(1)} diamantes/s</p>`;
-                    break;
-                case 'cannon':
-                    tooltipText += `<p><strong>Dano:</strong> ${building.damage.toFixed(1)}</p>`;
-                    tooltipText += `<p><strong>Velocidade:</strong> ${(1 / building.attackSpeed).toFixed(1)} ataques/s</p>`;
-                    tooltipText += `<p><strong>Alcance:</strong> ${building.range}px</p>`;
-                    break;
-                case 'wall':
-                    tooltipText += `<p><strong>Defesa:</strong> ${formatNumber(Math.floor(building.maxHP))} HP</p>`;
-                    break;
-                case 'laser':
-                    tooltipText += `<p><strong>Dano:</strong> ${building.damage.toFixed(1)}</p>`;
-                    tooltipText += `<p><strong>Velocidade:</strong> ${(1 / building.attackSpeed).toFixed(1)} ataques/s</p>`;
-                    tooltipText += `<p><strong>Alcance:</strong> ${building.range}px</p>`;
-                    tooltipText += `<p><strong>Atordoa:</strong> ${building.stunDuration}s</p>`;
-                    tooltipText += `<p><strong>Alvos:</strong> ${building.chainTargets}</p>`;
-                    break;
-                case 'missile':
-                    tooltipText += `<p><strong>Dano:</strong> ${building.splashDamage}</p>`;
-                    tooltipText += `<p><strong>Velocidade:</strong> ${(1 / building.attackSpeed).toFixed(1)} ataques/s</p>`;
-                    tooltipText += `<p><strong>Alcance:</strong> ${building.range}px</p>`;
-                    
-                    break;
-                case 'slow-tower':
-                    tooltipText += `<p><strong>Redução de velocidade:</strong> ${(building.slowAmount * 100).toFixed(1)}%</p>`;
-                    tooltipText += `<p><strong>Raio de efeito:</strong> ${building.slowRadius.toFixed(0)}px</p>`;
-                    tooltipText += `<p><strong>Duração:</strong> ${building.duration}s</p>`;
-                    break;
-                case 'barracks':
-                    tooltipText += `<p><strong>Unidades:</strong> ${building.spawnAmount}</p>`;
-                    tooltipText += `<p><strong>Taxa de spawn:</strong> 1 a cada ${building.spawnRate}s</p>`;
-                    tooltipText += `<p><strong>Dano da unidade:</strong> ${building.unitDamage.toFixed(1)}</p>`;
-                    tooltipText += `<p><strong>HP da unidade:</strong> ${building.unitHP.toFixed(0)}</p>`;
-                    break;
-            }
-            
-            if (building.level < building.maxLevel) {
-                tooltipText += `<p><em>Clique para melhorar</em></p>`;
-            }
-            
-            elements.tooltip.innerHTML = tooltipText;
-            elements.tooltip.style.display = 'block';
-            
-            // Position tooltip near building
-            const rect = building.element.getBoundingClientRect();
-            elements.tooltip.style.left = `${rect.right + 5}px`;
-            elements.tooltip.style.top = `${rect.top}px`;
+        // Show selection grid
+        function showSelectionGrid(x, y, size) {
+            elements.selectionGrid.style.display = 'block';
+            elements.selectionGrid.style.left = `${x - size/2}px`;
+            elements.selectionGrid.style.top = `${y - size/2}px`;
+            elements.selectionGrid.style.width = `${size}px`;
+            elements.selectionGrid.style.height = `${size}px`;
         }
 
-        // Show tooltip for base
-        function showBaseTooltip() {
-            const upgradeCost = gameState.baseUpgradeCost;
-            const nextLevel = gameState.baseLevel + 1;
-            
-            let tooltipText = `<h3>Núcleo (Nível ${gameState.baseLevel}${gameState.baseLevel >= 100 ? ' - Nível Máximo' : ''})</h3>`;
-            tooltipText += `<p><strong>HP:</strong> ${formatNumber(Math.floor(gameState.baseHP))}/${formatNumber(Math.floor(gameState.maxBaseHP))}</p>`;
-            
-            if (gameState.baseLevel < 100) {
-                tooltipText += `<p><strong>Upgrade para nível ${nextLevel}:</strong> ${formatNumber(upgradeCost)} diamantes</p>`;
-                
-                // Show benefits of next level
-                tooltipText += `<p><strong>Benefícios:</strong></p>`;
-                tooltipText += `<ul>`;
-                tooltipText += `<li>+20% HP do Núcleo</li>`;
-                
-                if (nextLevel % 3 === 0) {
-                    tooltipText += `<li>+2 Mineradoras</li>`;
-                    tooltipText += `<li>+1 Canhões</li>`;
-                    tooltipText += `<li>+5 Muros</li>`;
-                }
-                
-                if (nextLevel >= 7 && nextLevel % 3 === 1) {
-                    tooltipText += `<li>+1 Torre Laser</li>`;
-                }
-                
-                if (nextLevel === 15) {
-                    tooltipText += `<li>Desbloqueia Torre de Gelo</li>`;
-                }
-                
-                if (nextLevel === 10) {
-                    tooltipText += `<li>Desbloqueia Fusor de Plasma</li>`;
-                }
-                
-                if (nextLevel === 7) {
-                    tooltipText += `<li>Desbloqueia Torre Laser</li>`;
-                }
-                
-                if (nextLevel === 25) {
-                    tooltipText += `<li>Desbloqueia Quartel</li>`;
-                }
-                
-                tooltipText += `<li>Permite upgrades até nível ${nextLevel}</li>`;
-                tooltipText += `</ul>`;
-            } else {
-                tooltipText += `<p><strong>Nível máximo alcançado!</strong></p>`;
-            }
-            
-            elements.tooltip.innerHTML = tooltipText;
-            elements.tooltip.style.display = 'block';
-            
-            // Position tooltip near base
-            const rect = elements.base.getBoundingClientRect();
-            elements.tooltip.style.left = `${rect.right + 5}px`;
-            elements.tooltip.style.top = `${rect.top}px`;
-        }
-
-        // Hide tooltip
-        function hideTooltip() {
-            elements.tooltip.style.display = 'none';
+        // Hide selection grid
+        function hideSelectionGrid() {
+            elements.selectionGrid.style.display = 'none';
         }
 
         // Game loop
@@ -1880,7 +2464,7 @@
                         startY: building.y + building.element.clientHeight / 2,
                         targetX: closestEnemy.x + closestEnemy.element.clientWidth / 2,
                         targetY: closestEnemy.y + closestEnemy.element.clientHeight / 2,
-                        speed: 500, // pixels per second
+                        speed: 500,
                         damage: building.damage,
                         target: closestEnemy
                     });
@@ -1936,7 +2520,7 @@
                         damage: building.damage,
                         stunDuration: building.stunDuration,
                         startTime: timestamp,
-                        duration: 300 // milliseconds
+                        duration: 300
                     });
                     
                     // Create electric beam effect
@@ -2025,7 +2609,7 @@
                         startY: building.y + building.element.clientHeight / 2,
                         targetX: targetEnemy.x + targetEnemy.element.clientWidth / 2,
                         targetY: targetEnemy.y + targetEnemy.element.clientHeight / 2,
-                        speed: 300, // pixels per second
+                        speed: 300,
                         damage: building.damage,
                         splashRadius: building.splashRadius,
                         splashDamage: building.splashDamage,
@@ -2211,7 +2795,7 @@
                 
                 // Move toward base
                 const angle = Math.atan2(baseY - enemy.y, baseX - enemy.x);
-                const speed = enemy.speed / 60; // Assuming 60 FPS
+                const speed = enemy.speed / 60;
                 
                 enemy.x += Math.cos(angle) * speed;
                 enemy.y += Math.sin(angle) * speed;
@@ -2247,7 +2831,7 @@
                         enemy.x += Math.cos(pushAngle) * 5;
                         enemy.y += Math.sin(pushAngle) * 5;
                         
-                        break; // Only collide with one building per frame
+                        break;
                     }
                 }
                 
@@ -2275,7 +2859,7 @@
                             enemy.element.style.transform = 'scale(1)';
                         }, 100);
                         
-                        break; // Only collide with one ally per frame
+                        break;
                     }
                 }
                 
@@ -2284,7 +2868,7 @@
                 if (distanceToBase < 40) {
                     // Damage base
                     gameState.baseHP -= enemy.damage;
-                    elements.baseHpDisplay.textContent = formatNumber(Math.floor(gameState.baseHP));
+                    elements.baseHpDisplay.textContent = `${formatNumber(Math.floor(gameState.baseHP))}/${formatNumber(Math.floor(gameState.maxBaseHP))}`;
                     
                     // Visual feedback
                     elements.base.style.transform = 'translate(-50%, -50%) scale(1.1)';
@@ -2335,7 +2919,7 @@
                 // Move toward closest enemy if found
                 if (closestEnemy) {
                     const angle = Math.atan2(closestEnemy.y - ally.y, closestEnemy.x - ally.x);
-                    const speed = ally.speed / 60; // Assuming 60 FPS
+                    const speed = ally.speed / 60;
                     
                     ally.x += Math.cos(angle) * speed;
                     ally.y += Math.sin(angle) * speed;
@@ -2371,7 +2955,7 @@
                 const directionY = dy / distance;
                 
                 // Move projectile
-                const elapsed = 1/60; // Assuming 60 FPS
+                const elapsed = 1/60;
                 const moveDistance = projectile.speed * elapsed;
                 
                 projectile.startX += directionX * moveDistance;
@@ -2390,7 +2974,7 @@
                     if (projectile.isEnemyProjectile) {
                         // Enemy projectile hits base
                         gameState.baseHP -= projectile.damage;
-                        elements.baseHpDisplay.textContent = formatNumber(Math.floor(gameState.baseHP));
+                        elements.baseHpDisplay.textContent = `${formatNumber(Math.floor(gameState.baseHP))}/${formatNumber(Math.floor(gameState.maxBaseHP))}`;
                         
                         // Visual feedback
                         elements.base.style.transform = 'translate(-50%, -50%) scale(1.1)';
@@ -2436,7 +3020,7 @@
                 const directionY = dy / distance;
                 
                 // Move missile
-                const elapsed = 1/60; // Assuming 60 FPS
+                const elapsed = 1/60;
                 const moveDistance = missile.speed * elapsed;
                 
                 missile.startX += directionX * moveDistance;
@@ -2502,7 +3086,7 @@
                         missile.element.remove();
                         missile.trail.remove();
                         gameState.missileProjectiles.splice(i, 1);
-                        return; // Exit after first collision
+                        return;
                     }
                 }
                 
@@ -2720,87 +3304,126 @@
 
         // Event listeners
         function setupEventListeners() {
-    // Building selection
-    elements.buildOptions.forEach(option => {
-        option.addEventListener('click', () => {
-            elements.buildOptions.forEach(opt => opt.classList.remove('selected'));
-            option.classList.add('selected');
+            // Building selection
+            elements.buildOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    elements.buildOptions.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    
+                    const type = option.dataset.type;
+                    gameState.selectedBuilding = type;
+                    
+                    // Show selection grid
+                    const stats = gameState.buildingStats[type];
+                    showSelectionGrid(0, 0, stats.size);
+                });
+            });
             
-            const type = option.dataset.type;
-            gameState.selectedBuilding = type;
-        });
-    });
-    
-    // Keyboard shortcuts for building selection
-    document.addEventListener('keydown', (e) => {
-        if (e.key >= '1' && e.key <= '7') {
-            const index = parseInt(e.key) - 1;
-            if (index < elements.buildOptions.length) {
-                elements.buildOptions.forEach(opt => opt.classList.remove('selected'));
-                elements.buildOptions[index].classList.add('selected');
-                gameState.selectedBuilding = elements.buildOptions[index].dataset.type;
-            }
-        }
-    });
-    
-    // Place building on click
-    elements.gameBoard.addEventListener('click', (e) => {
-        if (!gameState.selectedBuilding) return;
-        
-        const rect = elements.gameBoard.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        placeBuilding(gameState.selectedBuilding, x, y);
-    });
-    
-    // Base upgrade
-    elements.baseUpgradeBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        upgradeBase();
-    });
-    
-    // Base tooltip
-    elements.base.addEventListener('mouseenter', showBaseTooltip);
-    elements.base.addEventListener('mouseleave', hideTooltip);
-    
-    // Restart game
-    elements.restartBtn.addEventListener('click', initGame);
-    
-    // Pan the game board with mouse drag
-    let isDragging = false;
-    let lastX = 0;
-    let lastY = 0;
-    
-    elements.gameBoard.addEventListener('mousedown', (e) => {
-        if (e.button === 1 || (e.button === 0 && e.ctrlKey)) {
-            isDragging = true;
-            lastX = e.clientX;
-            lastY = e.clientY;
-            e.preventDefault();
-        }
-    });
-    
-    document.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-            const dx = e.clientX - lastX;
-            const dy = e.clientY - lastY;
+            // Keyboard shortcuts for building selection
+            document.addEventListener('keydown', (e) => {
+                if (e.key >= '1' && e.key <= '7') {
+                    const index = parseInt(e.key) - 1;
+                    if (index < elements.buildOptions.length) {
+                        elements.buildOptions.forEach(opt => opt.classList.remove('selected'));
+                        elements.buildOptions[index].classList.add('selected');
+                        gameState.selectedBuilding = elements.buildOptions[index].dataset.type;
+                        
+                        // Show selection grid
+                        const stats = gameState.buildingStats[gameState.selectedBuilding];
+                        showSelectionGrid(0, 0, stats.size);
+                    }
+                }
+                
+                // Escape key to deselect building
+                if (e.key === 'Escape') {
+                    elements.buildOptions.forEach(opt => opt.classList.remove('selected'));
+                    gameState.selectedBuilding = null;
+                    hideSelectionGrid();
+                }
+            });
             
-            elements.gameBoard.scrollLeft -= dx;
-            elements.gameBoard.scrollTop -= dy;
+            // Place building on click
+            elements.gameBoard.addEventListener('click', (e) => {
+                if (!gameState.selectedBuilding) return;
+                
+                const rect = elements.gameBoard.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const stats = gameState.buildingStats[gameState.selectedBuilding];
+                const placed = placeBuilding(gameState.selectedBuilding, x, y);
+                
+                if (placed) {
+                    // Show selection grid again for next placement
+                    showSelectionGrid(x, y, stats.size);
+                }
+            });
             
-            lastX = e.clientX;
-            lastY = e.clientY;
+            // Base upgrade
+            elements.baseUpgradeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                upgradeBase();
+            });
+            
+            // Base click to show UI
+            elements.base.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showBaseUI();
+            });
+            
+            // Close buttons
+            elements.closeBuildingUI.addEventListener('click', hideBuildingUI);
+            elements.closeBaseUI.addEventListener('click', hideBaseUI);
+            
+            // Upgrade buttons
+            elements.upgradeSingleBtn.addEventListener('click', () => {
+                if (gameState.selectedBuildingForUI) {
+                    upgradeBuilding(gameState.selectedBuildingForUI);
+                }
+            });
+            
+            elements.upgradeMultiBtn.addEventListener('click', () => {
+                if (gameState.selectedBuildingForUI) {
+                    upgradeBuildingMulti(gameState.selectedBuildingForUI);
+                }
+            });
+            
+            elements.upgradeBaseBtn.addEventListener('click', upgradeBase);
+            
+            // Restart game
+            elements.restartBtn.addEventListener('click', initGame);
+            
+            // Pan the game board with mouse drag
+            let isDragging = false;
+            let lastX = 0;
+            let lastY = 0;
+            
+            elements.gameBoard.addEventListener('mousedown', (e) => {
+                if (e.button === 1 || (e.button === 0 && e.ctrlKey)) {
+                    isDragging = true;
+                    lastX = e.clientX;
+                    lastY = e.clientY;
+                    e.preventDefault();
+                }
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const dx = e.clientX - lastX;
+                    const dy = e.clientY - lastY;
+                    
+                    elements.gameBoard.scrollLeft -= dx;
+                    elements.gameBoard.scrollTop -= dy;
+                    
+                    lastX = e.clientX;
+                    lastY = e.clientY;
+                }
+            });
+            
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
         }
-    });
-    
-    document.addEventListener('mouseup', () => {
-        isDragging = false;
-    });
-
-    // Reset zoom if already applied
-    elements.gameBoard.style.transform = 'scale(1)';
-}
 
         // Initialize game
         setupEventListeners();
