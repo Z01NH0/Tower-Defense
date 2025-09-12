@@ -1611,7 +1611,7 @@
             spawnEnemies(enemyCount);
             
             // Spawn boss every 10 waves
-            if (gameState.wave % 10 === 0) {
+            if (gameState.wave % 5 === 0) {
                 spawnBoss();
             }
         }
@@ -1626,7 +1626,7 @@
             
             // Increase boss damage every 10 waves (10x)
             let bossDamage = gameState.enemyStats.types.find(type => type.type === "boss").damage;
-            bossDamage *= Math.pow(10, Math.floor(gameState.wave / 10));
+            bossDamage *= Math.pow(3, Math.floor(gameState.wave / 10));
             
             // Choose a random spawn point
             const spawnPoint = gameState.enemySpawnPoints[
