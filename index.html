@@ -1190,7 +1190,7 @@
 <body>
     <div id="game-container">
         <div id="header">
-            <div id="game-title">TOWER DEFENSE EVOLVED</div>
+            <div id="game-title">TOWER DEFENSE</div>
             <div id="game-info">
                 <div class="info-box">
                     <div class="info-label">WAVE</div>
@@ -1254,7 +1254,7 @@
                 <div class="build-limit">Disponível no level 7</div>
             </div>
             <div class="build-option disabled" data-type="missile" data-cost="5000">
-                <div class="build-icon">🚀</div>
+                <div class="build-icon">💥</div>
                 <div class="build-name">Fusor de Plasma</div>
                 <div class="build-cost">Custo: 5.000</div>
                 <div class="build-limit">Disponível no level 10</div>
@@ -1291,7 +1291,7 @@
                     <div class="stat-value" id="building-production">5/s</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Upgrade</div>
+                    <div class="stat-label">Custo de Upg.</div>
                     <div class="stat-value" id="building-upgrade-cost">80</div>
                 </div>
             </div>
@@ -1359,7 +1359,7 @@
                     <div class="stat-value" id="base-ui-hp">700/700</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Upgrade</div>
+                    <div class="stat-label">Custo de Upg.</div>
                     <div class="stat-value" id="base-upgrade-cost">1.800</div>
                 </div>
             </div>
@@ -1515,14 +1515,14 @@
                     baseAttackSpeed: 15,
                     attackSpeedMultiplier: 1.01,
                     range: 600,
-                    splashRadius: 190,
+                    splashRadius: 220,
                     baseSplashDamage: 120,
-                    splashDamageMultiplier: 1.7,
+                    splashDamageMultiplier: 1.9,
                     upgradeCost: 500,
                     upgradeCostMultiplier: 2.1,
                     color: "#ff5e00",
                     size: 45,
-                    icon: "🚀",
+                    icon: "💥",
                     maxLevel: 100
                 },
                 'slow-tower': {
@@ -1610,7 +1610,7 @@
                         damage: 50,
                         spawnChance: 0.1,
                         projectile: true,
-                        projectileCooldown: 10000,
+                        projectileCooldown: 12000,
                         lastProjectileTime: 0
                     },
                     { 
@@ -1827,7 +1827,7 @@
             spawnEnemies(enemyCount);
             
             // Spawn boss every 10 waves
-            if (gameState.wave % 10 === 0) {
+            if (gameState.wave % 5 === 0) {
                 spawnBoss();
             }
         }
@@ -3139,7 +3139,7 @@
                 // Check if enemy is dead
                 if (enemy.hp <= 0) {
                     // Chance to drop mineral
-                    if (Math.random() < 0.3) {
+                    if (Math.random() < 0.0) {
                         const mineral = document.createElement('div');
                         mineral.className = 'mineral';
                         mineral.style.left = `${enemy.x}px`;
