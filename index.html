@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#050713">
-<title>NEON FRONTIER 10.0 — Tower Defense Expansion</title>
+<title>NEON FRONTIER 10.1 — Compact Command</title>
 <style>
 :root{
   --bg:#050713;--panel:rgba(11,16,35,.82);--panel2:rgba(18,25,52,.8);--line:rgba(130,160,255,.18);
@@ -69,6 +69,34 @@ body.dragging-map #game{cursor:grabbing}
 @media(max-width:900px){#inspector:not(.hidden)+#mapTools{display:none}}
 @media(max-width:820px){.menu-card.command-center{overflow:auto}.command-top{display:block}.command-hero{min-height:330px;border-right:0;border-bottom:1px solid var(--line)}.command-main{min-height:620px}.research-grid{grid-template-columns:1fr}.operation-summary{grid-template-columns:1fr 1fr}.codex-grid{grid-template-columns:1fr 1fr}#mapTools{width:158px;right:8px;bottom:118px}#minimap{width:140px;height:82px}.map-actions button{height:28px}#objectives{display:none}}
 @media(max-width:560px){.command-main{padding:16px}.command-hero{padding:23px}.codex-grid{grid-template-columns:1fr}.difficulty-grid{grid-template-columns:1fr}.command-actions{flex-direction:column}.command-actions .secondary{width:100%}.result{grid-template-columns:1fr 1fr}#mapTools{display:none}.menu-tabs{display:grid;grid-template-columns:repeat(3,1fr)}.menu-tab{padding:8px 5px;font-size:8px}}
+
+/* === 10.1 COMPACT COMMAND UI ============================================ */
+#hud{left:10px;right:10px;top:9px;height:56px;gap:8px}
+.brand{height:56px;min-width:176px;padding:7px 13px;border-radius:14px}.brand small{font-size:7px}.brand strong{font-size:16px}.brand #hudProtocol{font-size:7px;margin-top:2px;color:var(--muted)}
+.stats{height:56px;gap:5px}.stat{height:56px;min-width:82px;padding:7px 10px;border-radius:13px}.stat.hp{min-width:132px}.stat span{font-size:7px}.stat b{font-size:14px;margin-top:3px}.bar{height:4px;margin-top:4px}
+.hud-actions{height:56px;padding:5px;gap:4px;border-radius:13px}.icon-btn{width:36px;height:36px;border-radius:10px;font-size:14px}.icon-btn.active{border-color:var(--cyan);background:rgba(86,245,255,.14);box-shadow:0 0 17px rgba(86,245,255,.22)}
+#bossBar{top:74px;width:min(540px,62vw);padding:7px 11px}.boss-title{font-size:9px}.boss-track{height:7px;margin-top:5px}
+#wavePanel{top:75px;left:10px;width:184px;padding:10px 11px;border-radius:13px}.phase{font-size:8px}.phase-line{margin-top:4px}.phase-line strong{font-size:20px}.phase-line small{font-size:8px}.primary.wide{margin-top:7px;padding:8px 10px;font-size:9px}
+#objectives,#threatPanel{display:none}
+#app.show-intel #objectives,#app.show-intel #threatPanel{display:block}
+#objectives{top:160px;left:10px;width:206px;padding:11px;border-radius:13px}.section-title{font-size:8px;margin-bottom:6px}.objective{margin-top:7px}.objective-line{font-size:9px}
+#threatPanel{right:10px;top:75px;width:200px;padding:10px;border-radius:13px}.threat-head{font-size:8px}.threat-chip{padding:6px 7px}.threat-chip span{font-size:7px}.threat-chip b{font-size:10px}
+#mapTools{right:10px;bottom:91px;width:176px;padding:7px;border-radius:13px}#minimap{height:88px}.map-head{font-size:7px}.map-actions{gap:5px;margin-top:5px}.map-actions button{height:25px}
+#abilities{left:10px;bottom:91px;gap:5px}.ability{width:58px;height:55px;border-radius:13px}.ability .glyph{font-size:18px;line-height:55px}.ability .key{top:5px;left:6px;font-size:7px}.ability .label{bottom:5px;font-size:6px}.ability .cool{font-size:12px}
+#buildDock{bottom:9px;width:min(900px,calc(100vw - 20px));height:72px;padding:6px;gap:5px;border-radius:16px;overflow-x:auto;overflow-y:hidden;justify-content:flex-start}
+.tower-card{flex:1 0 102px;min-width:102px;height:58px;padding:6px 7px;border-radius:12px}.tower-card:hover{transform:translateY(-2px)}.tower-card .num{top:5px;right:6px;font-size:7px}.tower-card .model{height:28px;gap:6px}.tower-card .orb{width:25px;height:25px;border-radius:8px;flex:0 0 25px}.tower-card .orb:after{inset:6px}.tower-card strong{display:block;max-width:62px;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tower-card small{display:flex;gap:4px;align-items:center;margin-top:2px;padding:0;font-size:7px;white-space:nowrap}.tower-card .cost{right:7px;bottom:5px;font-size:8px}.tower-card .limit-now{color:#dbe6ff;font-weight:800}.tower-card .limit-next{color:var(--muted)}
+.tower-card.blocked{opacity:.43;filter:grayscale(.92) brightness(.78);cursor:not-allowed}.tower-card.blocked:hover{transform:none;background:rgba(255,255,255,.035);border-color:transparent}.tower-card.limit-reached{border-color:rgba(255,84,112,.2)}.tower-card.unaffordable:not(.locked){opacity:.43}.tower-card.unaffordable:not(.locked) .cost{color:#ff8d79}.tower-card.selected:not(.blocked){opacity:1;filter:none}
+.tower-card .state-badge{position:absolute;left:5px;bottom:4px;max-width:62px;padding:2px 4px;border-radius:5px;background:rgba(3,5,13,.82);color:#e6eeff;font:800 6px Orbitron;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tower-card.limit-reached .state-badge{color:#ffabb8}.tower-card.unaffordable .state-badge{color:#ffc0a8}.tower-card.locked .state-badge{color:#c7d2ee}.tower-card.blocked .cost{opacity:.55}
+#targetHint{bottom:89px;padding:7px 11px;font-size:8px}
+#toastLayer{top:75px}
+#inspector{right:10px;top:75px;bottom:auto;height:auto;width:312px;border-radius:16px;max-height:calc(100vh - 166px)}.inspect-head{gap:9px;padding:10px 11px}.inspect-emblem{width:40px;height:40px;flex-basis:40px;border-radius:11px;font-size:13px}.inspect-head h3{font-size:11px}.inspect-head p{font-size:8px;margin-top:3px}.level-chip{font-size:6px}.close{width:28px;height:28px}.inspect-body{padding:10px 11px}.status-block{padding:8px}.status-line{font-size:7px}.status-line b{font-size:7px}.inspect-stats{gap:5px;margin-top:7px}.inspect-stat{padding:7px 6px}.inspect-stat span{font-size:6px}.inspect-stat b{font-size:9px;margin-top:3px}.special-box{margin-top:7px;padding:7px 8px}.special-box strong{font-size:7px}.special-box p{font-size:7px;margin-top:2px}.upgrade-heading{margin-top:8px;font-size:7px}.upgrade-paths{gap:7px;margin-top:6px}
+.upgrade{min-height:112px;padding:10px 9px;border:2px solid color-mix(in srgb,var(--tower,#56f5ff) 58%,white);background:linear-gradient(145deg,color-mix(in srgb,var(--tower,#56f5ff) 23%,#152044),rgba(7,10,24,.97));box-shadow:0 0 18px color-mix(in srgb,var(--tower,#56f5ff) 18%,transparent),inset 0 0 16px color-mix(in srgb,var(--tower,#56f5ff) 8%,transparent)}
+.upgrade:before{width:5px;opacity:1}.upgrade:hover:not(:disabled){transform:translateY(-3px) scale(1.015);border-color:#fff;box-shadow:0 10px 25px rgba(0,0,0,.32),0 0 25px color-mix(in srgb,var(--tower,#56f5ff) 36%,transparent)}.upgrade b{font-size:8px;margin-top:6px}.upgrade>span{font-size:7px;min-height:28px;margin-top:4px}.upgrade em{font-size:8px}.upgrade-foot strong{padding:4px 5px;border-radius:6px;background:var(--tower,#56f5ff);color:#06101e;font-size:6px}.upgrade.unaffordable,.upgrade:disabled{border-color:rgba(148,160,190,.18);background:rgba(255,255,255,.025);box-shadow:none;filter:grayscale(.7)}
+.action-row{gap:6px;margin-top:7px}.repair,.sell{min-height:32px;padding:6px;font-size:7px}.inspect-tip{font-size:7px;margin-top:5px}
+#inspector:not(.hidden)+#mapTools{right:332px}
+@media(max-width:900px){.brand{min-width:138px}.stats .stat:nth-child(4){display:none}#inspector{right:7px;top:70px;width:300px}.tower-card{min-width:96px;flex-basis:96px}}
+@media(max-width:680px){#hud{left:6px;right:6px;top:6px;height:48px}.brand{height:48px;width:96px;min-width:96px;padding:5px 7px}.brand strong{font-size:10px}.brand small,#hudProtocol{display:none}.stats{height:48px}.stat{height:48px;min-width:54px;padding:5px}.stat b{font-size:11px}.stat span{font-size:6px}.stat.hp{min-width:78px}.stats .stat:nth-child(4){display:none}.hud-actions{height:48px}.icon-btn{width:29px;height:29px;font-size:11px}#wavePanel{top:61px;left:6px;width:150px;padding:8px}#bossBar{top:61px}#toastLayer{top:61px}#buildDock{bottom:6px;height:65px;width:calc(100vw - 12px)}.tower-card{height:52px;min-width:91px;flex-basis:91px}.tower-card .model{height:24px}.tower-card .orb{width:22px;height:22px;flex-basis:22px}.tower-card strong{font-size:7px}.tower-card small,.tower-card .cost{font-size:7px}#abilities{left:6px;bottom:77px}.ability{width:47px;height:47px}.ability .glyph{line-height:47px;font-size:15px}.ability .label{display:none}#targetHint{bottom:75px}#inspector{left:6px;right:6px;bottom:76px;top:auto;width:auto;max-height:68vh}.upgrade{min-height:104px}#mapTools{display:none}#app.show-intel #threatPanel{display:none}#app.show-intel #objectives{display:block;top:119px;left:6px;width:188px}}
+
 </style>
 </head>
 <body>
@@ -82,7 +110,7 @@ body.dragging-map #game{cursor:grabbing}
       <div class="stat hp glass"><span>NÚCLEO</span><b id="coreValue">100%</b><div class="bar"><i id="coreBar"></i></div></div>
       <div class="stat glass"><span>PONTUAÇÃO</span><b id="scoreValue">0</b></div>
     </div>
-    <div class="hud-actions glass"><button class="icon-btn" id="speedBtn" title="Velocidade">1×</button><button class="icon-btn" id="pauseBtn" title="Pausar">Ⅱ</button><button class="icon-btn" id="settingsBtn" title="Configurações">⚙</button></div>
+    <div class="hud-actions glass"><button class="icon-btn" id="intelToggleBtn" title="Objetivos e radar">▦</button><button class="icon-btn" id="speedBtn" title="Velocidade">1×</button><button class="icon-btn" id="pauseBtn" title="Pausar">Ⅱ</button><button class="icon-btn" id="settingsBtn" title="Configurações">⚙</button></div>
   </header>
   <div id="bossBar" class="glass hidden"><div class="boss-title"><span id="bossName">ARCONTE</span><span id="bossHpText">100%</span></div><div class="boss-track"><i id="bossFill"></i></div></div>
   <section id="wavePanel" class="glass"><div class="phase" id="phaseLabel">PREPARAÇÃO</div><div class="phase-line"><strong id="phaseTimer">8.0</strong><small id="enemyRemain">0 hostis</small></div><button id="startWaveBtn" class="primary wide">INICIAR ONDA</button></section>
@@ -107,9 +135,9 @@ body.dragging-map #game{cursor:grabbing}
     <div class="menu-card command-center glass">
       <div class="command-top">
         <section class="command-hero">
-          <div class="eyebrow">PROTOCOLO DE DEFESA 10.0</div>
+          <div class="eyebrow">PROTOCOLO DE DEFESA 10.1</div>
           <h1>NEON<br>FRONTIER</h1>
-          <p class="lead">A fronteira foi aberta: um mapa várias vezes maior, câmera tática, minimapa, novas espécies hostis, dificuldades, arquivo de inteligência e uma árvore permanente de pesquisas.</p>
+          <p class="lead">Comando compacto, limites dinâmicos por construção, câmera tática, pesquisas permanentes e um setor de guerra completo sem poluir a tela.</p>
           <div class="meta-balance">
             <div class="meta-stat"><span>FRAGMENTOS</span><b id="menuShardValue">0</b></div>
             <div class="meta-stat"><span>MELHOR ONDA</span><b id="menuBestWave">0</b></div>
@@ -144,7 +172,7 @@ body.dragging-map #game{cursor:grabbing}
             <div class="panel-title"><h2>Arquivo hostil</h2><p>Conheça funções e prioridades antes de entrar no setor.</p></div>
             <div id="enemyCodex" class="codex-grid"></div>
           </div>
-          <div class="version">BUILD 10.0 • FRONTIER & METAPROGRESSION EXPANSION</div>
+          <div class="version">BUILD 10.1 • COMPACT COMMAND & DYNAMIC LIMITS</div>
         </section>
       </div>
     </div>
@@ -356,6 +384,16 @@ const TOWERS={
     }
   }
 };
+const TOWER_LIMIT_RULES={
+  extractor:{base:2,every:3,gain:1,max:9,label:'+1 a cada 3 ondas'},
+  aegis:{base:10,every:2,gain:2,max:34,label:'+2 a cada 2 ondas'},
+  sentinel:{base:3,every:2,gain:1,max:14,label:'+1 a cada 2 ondas'},
+  prism:{base:1,every:4,gain:1,max:7,label:'+1 a cada 4 ondas'},
+  cryo:{base:1,every:5,gain:1,max:6,label:'+1 a cada 5 ondas'},
+  mortar:{base:1,every:5,gain:1,max:6,label:'+1 a cada 5 ondas'},
+  barracks:{base:1,every:6,gain:1,max:5,label:'+1 a cada 6 ondas'},
+  void:{base:1,every:7,gain:1,max:4,label:'+1 a cada 7 ondas'}
+};
 const ENEMIES={
   drone:{name:'Drone',role:'Linha comum',color:'#ff5470',hp:60,speed:62,damage:28,size:13,reward:9,unlock:1},
   runner:{name:'Corredor',role:'Avanço veloz',color:'#ffb14e',hp:38,speed:112,damage:20,size:10,reward:8,unlock:1},
@@ -461,7 +499,7 @@ class Game{
     this.selectedBuild=null;this.selectedTower=null;this.pendingAbility=null;this.waveActive=false;this.prep=10;this.spawnQueue=[];this.spawnClock=0;this.waveModifier=null;
     this.ability={orbital:0,chrono:0,repair:0,ultimate:0};this.ultCharge=0;this.boss=null;this.operationTime=0;this.noDamageWaves=0;this.coreHitThisWave=false;
     this.objectives=[{id:'kills',label:'Eliminar hostis',value:0,target:90,reward:175,done:false},{id:'build',label:'Construir defesas',value:0,target:10,reward:145,done:false},{id:'ability',label:'Abates com poderes',value:0,target:24,reward:1,done:false,shard:true}];
-    this.unlockedAchievements=new Set();this.activeUlt=null;this.phaseMessage='PREPARAÇÃO';this.inspectorSignature='';this.lastPlacementStatus='';this.lastThreatSignature='';
+    this.unlockedAchievements=new Set();this.activeUlt=null;this.phaseMessage='PREPARAÇÃO';this.inspectorSignature='';this.dockSignature='';this.lastPlacementStatus='';this.lastThreatSignature='';$('#app')?.classList.remove('show-intel');$('#intelToggleBtn')?.classList.remove('active');
     this.updateDom(true);this.buildDock();this.buildAbilities();this.renderObjectives();this.closeInspector();this.renderMenu();
   }
   start(){
@@ -481,6 +519,7 @@ class Game{
     $('#centerMapBtn').onclick=()=>this.centerCamera();$('#zoomInBtn').onclick=()=>this.setZoom(this.camera.targetZoom+.12);$('#zoomOutBtn').onclick=()=>this.setZoom(this.camera.targetZoom-.12);
     $('#startBtn').onclick=()=>this.start();$('#restartBtn').onclick=()=>this.start();$('#restartPauseBtn').onclick=()=>this.start();
     $('#menuBtn').onclick=()=>{this.mode='menu';$('#gameOverOverlay').classList.add('hidden');$('#menuOverlay').classList.remove('hidden');this.renderMenu();};
+    $('#intelToggleBtn').onclick=()=>this.toggleIntelPanels();
     $('#pauseBtn').onclick=()=>this.togglePause();$('#resumeBtn').onclick=()=>this.togglePause(false);
     $('#speedBtn').onclick=()=>{this.speed=this.speed===1?2:this.speed===2?3:1;$('#speedBtn').textContent=this.speed+'×';};
     $('#startWaveBtn').onclick=()=>{if(!this.waveActive)this.startWave();};
@@ -488,7 +527,7 @@ class Game{
     $('#musicVolume').oninput=e=>audio.setMusic(e.target.value);$('#sfxVolume').oninput=e=>audio.setSfx(e.target.value);
     $('#motionBtn').onclick=()=>{this.reducedMotion=!this.reducedMotion;$('#motionBtn').textContent=this.reducedMotion?'ATIVADO':'DESATIVADO';};
     $('#particleAmount').oninput=e=>this.particleScale=+e.target.value;
-    $('#howBtn').onclick=()=>this.toast('CONTROLES','1–8 torres • Q/W/E/R poderes • Espaço inicia onda • P pausa • roda aplica zoom • Shift + arrastar ou botão do meio move o mapa.',5200);
+    $('#howBtn').onclick=()=>this.toast('CONTROLES','1–8 torres • Q/W/E/R poderes • I abre objetivos/radar • Espaço inicia onda • P pausa • roda aplica zoom • Shift + arrastar move o mapa.',5200);
     $$('.menu-tab').forEach(b=>b.onclick=()=>this.openMenuTab(b.dataset.menuTab));
     $('#backupMetaBtn').onclick=()=>this.copyMetaBackup();$('#importMetaBtn').onclick=()=>this.importMetaBackup();$('#resetMetaBtn').onclick=()=>this.resetMetaProgress();
     addEventListener('keydown',e=>{this.keys.add(e.key);this.onKey(e);});addEventListener('keyup',e=>this.keys.delete(e.key));
@@ -514,6 +553,10 @@ class Game{
     if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))e.preventDefault();if(e.repeat)return;
     if(e.key.toLowerCase()==='p'){
       this.togglePause();
+      return;
+    }
+    if(e.key.toLowerCase()==='i'){
+      this.toggleIntelPanels();
       return;
     }
     if(e.key==='Escape'){
@@ -585,6 +628,29 @@ class Game{
   worldToScreen(x,y){return{x:(x-this.camera.x)*this.camera.zoom+this.w/2,y:(y-this.camera.y)*this.camera.zoom+this.h/2};}
   isVisible(o,margin=90){const p=this.worldToScreen(o.x,o.y);return p.x>-margin&&p.y>-margin&&p.x<this.w+margin&&p.y<this.h+margin;}
   updateMapReadout(){const el=$('#mapReadout');if(el)el.textContent=`SETOR ${this.world.w} × ${this.world.h} • ZOOM ${Math.round(this.camera.zoom*100)}%`;if($('#zoomLabel'))$('#zoomLabel').textContent=Math.round(this.camera.zoom*100)+'%';}
+  toggleIntelPanels(){
+    const visible=$('#app').classList.toggle('show-intel'),btn=$('#intelToggleBtn');
+    btn?.classList.toggle('active',visible);
+    if(btn){btn.textContent=visible?'▣':'▦';btn.title=visible?'Ocultar objetivos e radar':'Mostrar objetivos e radar';}
+  }
+  towerLimit(type,wave=this.wave){
+    const r=TOWER_LIMIT_RULES[type];
+    return Math.min(r.max,r.base+Math.floor(Math.max(0,wave)/r.every)*r.gain);
+  }
+  towerCount(type){return this.towers.reduce((n,t)=>n+(t.hp>0&&t.type===type?1:0),0);}
+  nextLimitWave(type,wave=this.wave){
+    const r=TOWER_LIMIT_RULES[type],current=this.towerLimit(type,wave);
+    if(current>=r.max)return null;
+    return (Math.floor(Math.max(0,wave)/r.every)+1)*r.every;
+  }
+  towerAvailability(type){
+    const cfg=TOWERS[type],cost=this.towerCost(type),count=this.towerCount(type),limit=this.towerLimit(type),locked=this.wave<cfg.unlock,capped=count>=limit,poor=this.credits<cost;
+    return{cfg,cost,count,limit,locked,capped,poor,next:this.nextLimitWave(type)};
+  }
+  limitIncreasesAtWave(wave){
+    if(wave<=0)return[];
+    return Object.keys(TOWERS).filter(type=>this.towerLimit(type,wave)>this.towerLimit(type,wave-1));
+  }
   cancelAction(){
     this.selectedBuild=null;
     this.pendingAbility=null;
@@ -595,11 +661,23 @@ class Game{
   }
   buildDock(){
     const dock=$('#buildDock');dock.innerHTML='';
-    Object.entries(TOWERS).forEach(([id,t],i)=>{const b=document.createElement('button');b.className='tower-card';b.style.setProperty('--tower',t.color);b.dataset.type=id;b.innerHTML=`<span class="num">${i+1}</span><div class="model"><span class="orb"></span><strong>${t.name}</strong></div><small>${t.special}</small><span class="cost">◆ <i>${fmt(this.towerCost(id))}</i></span><span class="unlock-badge hidden"></span>`;b.onclick=()=>this.selectBuild(id);dock.appendChild(b);});
-    this.refreshDock();
+    Object.entries(TOWERS).forEach(([id,t],i)=>{const b=document.createElement('button');b.className='tower-card';b.style.setProperty('--tower',t.color);b.dataset.type=id;b.innerHTML=`<span class="num">${i+1}</span><div class="model"><span class="orb"></span><div><strong>${t.name}</strong><small><span class="limit-now">0/0</span><span class="limit-next"></span></small></div></div><span class="cost">◆ <i>${fmt(this.towerCost(id))}</i></span><span class="state-badge hidden"></span>`;b.onclick=()=>this.selectBuild(id);dock.appendChild(b);});
+    this.refreshDock(true);
   }
-  refreshDock(){
-    if(!$('#buildDock'))return;$$('.tower-card').forEach(card=>{const t=TOWERS[card.dataset.type],cost=this.towerCost(card.dataset.type),locked=this.wave<t.unlock,poor=this.credits<cost;card.classList.toggle('locked',locked);card.classList.toggle('unaffordable',poor&&!locked);card.classList.toggle('selected',this.selectedBuild===card.dataset.type);const costEl=card.querySelector('.cost i');if(costEl)costEl.textContent=fmt(cost);const badge=card.querySelector('.unlock-badge');if(badge){badge.classList.toggle('hidden',!locked);badge.textContent=`ONDA ${t.unlock}`;}card.title=locked?`Desbloqueia na onda ${t.unlock}`:poor?`${t.name}: faltam ${fmt(cost-this.credits)} créditos`:`${t.name}: ${t.desc}`;});
+  refreshDock(force=false){
+    const dock=$('#buildDock');if(!dock)return;
+    const cards=$$('.tower-card'),rows=cards.map(card=>({card,type:card.dataset.type,a:this.towerAvailability(card.dataset.type)}));
+    const signature=rows.map(({type,a})=>`${type}:${a.count}:${a.limit}:${a.cost}:${a.locked?1:0}:${a.capped?1:0}:${a.poor?1:0}:${a.next||0}:${this.selectedBuild===type?1:0}`).join('|');
+    if(!force&&signature===this.dockSignature)return;this.dockSignature=signature;
+    rows.forEach(({card,type,a})=>{
+      const blocked=a.locked||a.capped||a.poor;
+      card.classList.toggle('locked',a.locked);card.classList.toggle('limit-reached',a.capped&&!a.locked);card.classList.toggle('unaffordable',a.poor&&!a.locked&&!a.capped);card.classList.toggle('blocked',blocked);card.classList.toggle('selected',this.selectedBuild===type&&!blocked);card.setAttribute('aria-disabled',blocked?'true':'false');
+      const costEl=card.querySelector('.cost i'),limitNow=card.querySelector('.limit-now'),limitNext=card.querySelector('.limit-next'),badge=card.querySelector('.state-badge');
+      if(costEl)costEl.textContent=fmt(a.cost);if(limitNow)limitNow.textContent=`${a.count}/${a.limit}`;if(limitNext)limitNext.textContent=a.next?`• +${TOWER_LIMIT_RULES[type].gain} O${a.next}`:'• MÁX';
+      let state='';if(a.locked)state=`LIBERA O${a.cfg.unlock}`;else if(a.capped)state='LIMITE ATINGIDO';else if(a.poor)state='SEM CRÉDITOS';
+      if(badge){badge.textContent=state;badge.classList.toggle('hidden',!state);}
+      card.title=a.locked?`${a.cfg.name}: desbloqueia na onda ${a.cfg.unlock}.`:a.capped?`${a.cfg.name}: limite ${a.count}/${a.limit}. Próximo aumento ${a.next?'na onda '+a.next:'não disponível'}.`:a.poor?`${a.cfg.name}: faltam ${fmt(a.cost-this.credits)} créditos.`:`${a.cfg.name} • ${a.count}/${a.limit} • ${TOWER_LIMIT_RULES[type].label}. ${a.cfg.desc}`;
+    });
   }
   buildAbilities(){
     const root=$('#abilities');
@@ -614,8 +692,11 @@ class Game{
     });
   }
   selectBuild(type){
-    const t=TOWERS[type];if(this.wave<t.unlock){this.toast('TECNOLOGIA BLOQUEADA',`Disponível a partir da onda ${t.unlock}.`);return;}
-    this.selectedBuild=this.selectedBuild===type?null:type;this.pendingAbility=null;this.closeInspector();const hint=$('#targetHint');hint.classList.toggle('hidden',!this.selectedBuild);if(this.selectedBuild)this.updatePlacementHint(true);else hint.classList.remove('valid','invalid');this.refreshDock();
+    const a=this.towerAvailability(type);
+    if(a.locked){this.toast('TECNOLOGIA BLOQUEADA',`Disponível a partir da onda ${a.cfg.unlock}.`);audio.play('hit');return;}
+    if(a.capped){this.toast('LIMITE ATINGIDO',`${a.cfg.name}: ${a.count}/${a.limit}. ${a.next?`Novo espaço na onda ${a.next}.`:'Capacidade máxima alcançada.'}`);audio.play('hit');return;}
+    if(a.poor){this.toast('CRÉDITOS INSUFICIENTES',`Faltam ${fmt(a.cost-this.credits)} créditos para ${a.cfg.name}.`);audio.play('hit');return;}
+    this.selectedBuild=this.selectedBuild===type?null:type;this.pendingAbility=null;this.closeInspector();const hint=$('#targetHint');hint.classList.toggle('hidden',!this.selectedBuild);if(this.selectedBuild)this.updatePlacementHint(true);else hint.classList.remove('valid','invalid');this.refreshDock(true);
   }
   towerSize(type){
     return type==='aegis'?27:22;
@@ -638,13 +719,16 @@ class Game{
   updatePlacementHint(generic=false){
     if(!this.selectedBuild)return;const hint=$('#targetHint'),cfg=TOWERS[this.selectedBuild],check=generic?null:this.placementCheck(this.selectedBuild,this.pointer.x,this.pointer.y);
     hint.classList.remove('valid','invalid');
-    if(!check){hint.textContent=`POSICIONE ${cfg.name.toUpperCase()} • SHIFT + ARRASTAR MOVE O MAPA`;return;}
-    hint.classList.add(check.ok?'valid':'invalid');hint.textContent=check.ok?`ÁREA LIVRE • CONSTRUIR ${cfg.name.toUpperCase()}`:`BLOQUEADO • ${check.reason.toUpperCase()}`;
+    const a=this.towerAvailability(this.selectedBuild);
+    if(!check){hint.textContent=`${cfg.name.toUpperCase()} ${a.count}/${a.limit} • POSICIONE NO SETOR`;return;}
+    hint.classList.add(check.ok?'valid':'invalid');hint.textContent=check.ok?`ÁREA LIVRE • ${cfg.name.toUpperCase()} ${a.count}/${a.limit}`:`BLOQUEADO • ${check.reason.toUpperCase()}`;
   }
   towerCost(type){return Math.max(1,Math.floor(TOWERS[type].cost*this.costMult));}
   placeTower(type,x,y){
-    const cfg=TOWERS[type],cost=this.towerCost(type);
-    if(this.credits<cost){this.toast('CRÉDITOS INSUFICIENTES',`Faltam ${fmt(cost-this.credits)} créditos.`);audio.play('hit');return;}
+    const a=this.towerAvailability(type),cfg=a.cfg,cost=a.cost;
+    if(a.locked){this.toast('TECNOLOGIA BLOQUEADA',`Disponível na onda ${cfg.unlock}.`);audio.play('hit');return;}
+    if(a.capped){this.toast('LIMITE ATINGIDO',`${cfg.name}: ${a.count}/${a.limit}. ${a.next?`Novo espaço na onda ${a.next}.`:'Capacidade máxima alcançada.'}`);audio.play('hit');this.cancelAction();return;}
+    if(a.poor){this.toast('CRÉDITOS INSUFICIENTES',`Faltam ${fmt(cost-this.credits)} créditos.`);audio.play('hit');this.cancelAction();return;}
     const check=this.placementCheck(type,x,y);if(!check.ok){this.toast('POSIÇÃO INVÁLIDA',check.reason.charAt(0).toUpperCase()+check.reason.slice(1)+'.');audio.play('hit');this.updatePlacementHint();return;}
     this.credits-=cost;const t={id:uid++,type,x,y,size:this.towerSize(type),level:1,pathA:0,pathB:0,hp:cfg.hp,maxHp:cfg.hp,cool:rand(0,cfg.rate),angle:0,energy:0,pulse:0,production:0,kills:0,taunt:0,units:0,invested:cost,sellConfirmUntil:0};
     this.towers.push(t);this.objective('build',1);this.burst(x,y,cfg.color,20,1.3);this.ring(x,y,38,cfg.color,.55);audio.play('build');this.floatText(x,y-26,cfg.name,cfg.color);this.selectTower(t);this.updateDom(true);
@@ -669,14 +753,14 @@ class Game{
       this.closeInspector();
       return;
     }
-    const c=TOWERS[t.type],s=this.towerStats(t),costA=this.upgradeCost(t,'a'),costB=this.upgradeCost(t,'b'),maxA=t.pathA>=4,maxB=t.pathB>=4,poorA=this.credits<costA,poorB=this.credits<costB,healthPct=clamp(t.hp/t.maxHp*100,0,100),repairCost=this.repairCost(t),confirm=this.now<(t.sellConfirmUntil||0),dots=n=>'●'.repeat(n)+'○'.repeat(4-n),signature=[t.id,Math.ceil(t.hp),Math.ceil(t.maxHp),Math.floor(t.energy),t.pathA,t.pathB,Math.floor(this.credits),confirm].join('|');
+    const c=TOWERS[t.type],s=this.towerStats(t),costA=this.upgradeCost(t,'a'),costB=this.upgradeCost(t,'b'),maxA=t.pathA>=4,maxB=t.pathB>=4,poorA=this.credits<costA,poorB=this.credits<costB,healthPct=clamp(t.hp/t.maxHp*100,0,100),repairCost=this.repairCost(t),confirm=this.now<(t.sellConfirmUntil||0),dots=n=>'●'.repeat(n)+'○'.repeat(4-n),capacity=this.towerAvailability(t.type),signature=[t.id,Math.ceil(t.hp),Math.ceil(t.maxHp),Math.floor(t.energy),t.pathA,t.pathB,Math.floor(this.credits),confirm,capacity.count,capacity.limit].join('|');
     if(!force&&signature===this.inspectorSignature)return;
     this.inspectorSignature=signature;
     const powerLabel=t.type==='extractor'?'RENDA':t.type==='aegis'?'ARMADURA':'PODER',powerValue=t.type==='extractor'?`${s.power.toFixed(0)}/ciclo`:t.type==='aegis'?fmt(s.hp):fmt(s.power),rateValue=t.type==='extractor'?`${s.rate.toFixed(1)}s`:t.type==='aegis'?'BLOQUEIO':`${s.rate.toFixed(2)}s`;
     const path=(key,data,level,cost,maxed,poor)=>`<button class="upgrade ${poor&&!maxed?'unaffordable':''} ${maxed?'maxed':''}" id="up${key.toUpperCase()}" ${maxed?'disabled':''}><div class="path-top"><span class="path-tag">ROTA ${key.toUpperCase()}</span><span class="path-dots">${dots(level)}</span></div><b>${data.name}</b><span>${data.desc}</span><div class="upgrade-foot"><em>${maxed?'NÍVEL MÁXIMO':'◆ '+fmt(cost)}</em><strong>${maxed?'CONCLUÍDA':poor?'SEM CRÉDITOS':'APRIMORAR'}</strong></div></button>`;
     const root=$('#inspector');
     root.style.setProperty('--tower',c.color);
-    root.innerHTML=`<div class="inspect-head"><div class="inspect-emblem">${c.short}</div><div class="inspect-title"><h3>${c.name}<span class="level-chip">LV ${t.level}</span></h3><p>${t.kills} eliminações • ◆ ${fmt(t.invested||c.cost)} investidos</p></div><button class="close" id="inspectClose" title="Fechar">×</button></div><div class="inspect-body"><div class="status-block"><div class="status-line"><span>INTEGRIDADE</span><b>${fmt(t.hp)} / ${fmt(t.maxHp)} • ${Math.ceil(healthPct)}%</b></div><div class="status-track"><i style="width:${healthPct}%"></i></div><div class="status-line"><span>CARGA DO ESPECIAL</span><b>${Math.floor(t.energy)}%</b></div><div class="status-track energy"><i style="width:${clamp(t.energy,0,100)}%"></i></div></div><div class="inspect-stats"><div class="inspect-stat"><span>${powerLabel}</span><b>${powerValue}</b></div><div class="inspect-stat"><span>ALCANCE</span><b>${s.range?fmt(s.range):'—'}</b></div><div class="inspect-stat"><span>CICLO</span><b>${rateValue}</b></div></div><div class="special-box"><strong>${c.special}</strong><p>${c.desc}</p></div><div class="upgrade-heading"><span>ROTAS DE EVOLUÇÃO</span><span>Cada rota pode chegar ao nível 4</span></div><div class="upgrade-paths">${path('a',c.a,t.pathA,costA,maxA,poorA)}${path('b',c.b,t.pathB,costB,maxB,poorB)}</div><div class="action-row"><button class="repair" id="repairTower" ${t.hp>=t.maxHp-1?'disabled':''}>${t.hp>=t.maxHp-1?'INTEGRIDADE TOTAL':'REPARAR • ◆ '+fmt(repairCost)}</button><button class="sell ${confirm?'confirm':''}" id="sellTower">${confirm?'CONFIRMAR DESMONTAGEM':'DESMONTAR • +◆ '+fmt(this.sellValue(t))}</button></div><div class="inspect-tip">A venda devolve 65% de todo o valor investido.</div></div>`;
+    root.innerHTML=`<div class="inspect-head"><div class="inspect-emblem">${c.short}</div><div class="inspect-title"><h3>${c.name}<span class="level-chip">LV ${t.level}</span></h3><p>${t.kills} eliminações • limite ${capacity.count}/${capacity.limit} • ◆ ${fmt(t.invested||c.cost)}</p></div><button class="close" id="inspectClose" title="Fechar">×</button></div><div class="inspect-body"><div class="status-block"><div class="status-line"><span>INTEGRIDADE</span><b>${fmt(t.hp)} / ${fmt(t.maxHp)} • ${Math.ceil(healthPct)}%</b></div><div class="status-track"><i style="width:${healthPct}%"></i></div><div class="status-line"><span>CARGA DO ESPECIAL</span><b>${Math.floor(t.energy)}%</b></div><div class="status-track energy"><i style="width:${clamp(t.energy,0,100)}%"></i></div></div><div class="inspect-stats"><div class="inspect-stat"><span>${powerLabel}</span><b>${powerValue}</b></div><div class="inspect-stat"><span>ALCANCE</span><b>${s.range?fmt(s.range):'—'}</b></div><div class="inspect-stat"><span>CICLO</span><b>${rateValue}</b></div></div><div class="special-box"><strong>${c.special}</strong><p>${c.desc}</p></div><div class="upgrade-heading"><span>ROTAS DE EVOLUÇÃO</span><span>Cada rota pode chegar ao nível 4</span></div><div class="upgrade-paths">${path('a',c.a,t.pathA,costA,maxA,poorA)}${path('b',c.b,t.pathB,costB,maxB,poorB)}</div><div class="action-row"><button class="repair" id="repairTower" ${t.hp>=t.maxHp-1?'disabled':''}>${t.hp>=t.maxHp-1?'INTEGRIDADE TOTAL':'REPARAR • ◆ '+fmt(repairCost)}</button><button class="sell ${confirm?'confirm':''}" id="sellTower">${confirm?'CONFIRMAR DESMONTAGEM':'DESMONTAR • +◆ '+fmt(this.sellValue(t))}</button></div><div class="inspect-tip">A venda devolve 65% de todo o valor investido.</div></div>`;
     root.classList.remove('hidden');
     $('#inspectClose').onclick=()=>this.closeInspector();
     $('#upA').onclick=()=>this.upgradeTower(t,'a');
@@ -757,7 +841,8 @@ class Game{
     this.updateDom(true);
   }
   startWave(){
-    if(this.waveActive||this.mode!=='playing')return;this.wave++;this.waveActive=true;this.prep=0;this.waveKills=0;this.coreHitThisWave=false;this.phaseMessage='ONDA EM CURSO';
+    if(this.waveActive||this.mode!=='playing')return;this.wave++;const expanded=this.limitIncreasesAtWave(this.wave);this.waveActive=true;this.prep=0;this.waveKills=0;this.coreHitThisWave=false;this.phaseMessage='ONDA EM CURSO';
+    if(expanded.length){const names=expanded.map(type=>`${TOWERS[type].name} ${this.towerLimit(type)-TOWER_LIMIT_RULES[type].gain}→${this.towerLimit(type)}`).join(' • ');this.toast('CAPACIDADE AMPLIADA',names,3400);audio.play('upgrade',.82);}
     const mods=['blindagem','sobrecarga','enxame','regeneração','elite'];this.waveModifier=this.wave%4===0?mods[Math.floor((this.wave/4-1)%mods.length)]:null;
     const count=Math.floor(8+this.wave*2.75+Math.pow(this.wave,1.2));for(let i=0;i<count;i++)this.spawnQueue.push(this.chooseEnemy());if(this.wave%5===0)this.spawnQueue.push('boss');
     this.spawnClock=.25;this.toast(`ONDA ${this.wave}${this.waveModifier?' • '+this.waveModifier.toUpperCase():''}`,this.modifierText());this.refreshDock();audio.play(this.wave%5===0?'boss':'ability',.65);
